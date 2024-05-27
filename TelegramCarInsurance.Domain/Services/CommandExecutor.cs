@@ -70,7 +70,7 @@ namespace TelegramCarInsurance.Domain.Services
                 catch (Exception e)
                 {
                     await Commands
-                        .First(x => x.Name.ToLower() == CommandsName.ErrorCommand)!
+                        .First(x => x.Name == CommandsName.ErrorCommand)
                         .Execute(update);
                 }
             }
@@ -85,7 +85,7 @@ namespace TelegramCarInsurance.Domain.Services
             else
             {
                 await Commands
-                    .First(x => x.Name.ToLower() == CommandsName.ErrorCommand)!
+                    .First(x => x.Name == CommandsName.ErrorCommand)!
                     .Execute(update);
             }
 
