@@ -10,11 +10,11 @@ using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
-    public class ErrorFileCommand : ICommand
+    public class ErrorCommand : ICommand
     {
         public TelegramBotClient BotClient { get; set; }
         public string Name => CommandsName.ErrorCommand;
-        public ErrorFileCommand(TelegramBotClient botClient)
+        public ErrorCommand(TelegramBotClient botClient)
         {
             BotClient = botClient;
         }
@@ -24,7 +24,7 @@ namespace TelegramCarInsurance.Domain.Commands
             long chatId = update.Message!.Chat.Id;
 
             await BotClient.SendTextMessageAsync(chatId,
-            $"Oops, we don't support {update.Message.Type.ToString().ToLower()} as type of message", 
+            $"Oops, we don't support this type of message", 
             replyMarkup:Keyboard.ConfirmButtonMarkup);
         }
     }

@@ -40,7 +40,7 @@ namespace TelegramCarInsurance.Domain.Services
             {
                 new StartCommand(botClient.GetClient()),
                 new PriceDisagreeCommand(botClient.GetClient()),
-                new ErrorFileCommand(botClient.GetClient()),
+                new ErrorCommand(botClient.GetClient()),
                 new GeneratePriceQuotationCommand(botClient.GetClient(), userDataStorage),
                 new WatchDataCommand(botClient.GetClient(), userDataStorage),
                 new ScanPassportCommand(botClient.GetClient(), userDataStorage, configuration),
@@ -61,30 +61,31 @@ namespace TelegramCarInsurance.Domain.Services
             // If statement for MessageType.Text messages
             if (msg.Type == MessageType.Text)
             {
-                foreach (var command in Commands)
+                try
                 {
-                    if (command.Name == msg.Text)
-                    {
-                        await command.Execute(update);
-                    }
+                    await Commands
+                        .First(x => x.Name.ToLower() == msg.Text.ToLower())!
+                        .Execute(update);
+                }
+                catch (Exception e)
+                {
+                    await Commands
+                        .First(x => x.Name.ToLower() == CommandsName.ErrorCommand)!
+                        .Execute(update);
                 }
             }
             // If statement for MessageType.Document messages
             else if (msg.Type == MessageType.Document)
             {
-                foreach (var command in Commands)
-                {
-                    if (command.Name == msg.Caption)
-                    {
-                        await command.Execute(update);
-                    }
-                }
+                await Commands
+                    .First(x => x.Name.ToLower() == msg.Caption.ToLower())!
+                    .Execute(update);
             }
             // If statement for unsupported type messages
             else
             {
                 await Commands
-                    .FirstOrDefault(x => x.Name == CommandsName.ErrorCommand)!
+                    .First(x => x.Name.ToLower() == CommandsName.ErrorCommand)!
                     .Execute(update);
             }
 
