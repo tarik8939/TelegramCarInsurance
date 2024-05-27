@@ -57,7 +57,8 @@ namespace TelegramCarInsurance.Domain.Commands
                 await BotClient.SendDocumentAsync(
                     chatId: chatId,
                     document: new InputFileStream(new MemoryStream(pdf), "Policy.pdf"),
-                    caption: "Here's your Insurance Policy Issuance.", replyMarkup:Keyboard.ConfirmButtonMarkup
+                    caption: $"Here's your Insurance Policy Issuance {update.Message.Chat.Username}.", 
+                    replyMarkup:Keyboard.ConfirmButtonMarkup
                 );
             }
             catch (Exception e)

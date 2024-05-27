@@ -28,7 +28,7 @@ namespace TelegramCarInsurance.Domain.Commands
         {
             long chatId = update.Message.Chat.Id;
 
-            await BotClient.SendTextMessageAsync(chatId, "Hello, I'm Jarvis, your car insurance assistant bot");
+            await BotClient.SendTextMessageAsync(chatId, $"Hello {update.Message.Chat.Username}, I'm Jarvis, your car insurance assistant bot");
             await BotClient.SendTextMessageAsync(chatId,
                 "To apply for insurance, you need to upload a document of your passport with `/passport` caption " +
                 "and a vehicle identification document with `/vehicle` caption and after all confirm data in button menu",
