@@ -35,8 +35,11 @@ namespace TelegramCarInsurance.Domain.Commands
                 var userData = Storage.GetData(chatId);
                 await BotClient.SendTextMessageAsync(chatId,
                         $"Car's plate data:\n{userData.LicensePlateDocument.ToString()}" +
-                        $"Your personal data:\n{userData.PassportDocument.ToString()}", 
-                        replyMarkup: Keyboard.ConfirmButtonMarkup);
+                        $"Your personal data:\n{userData.PassportDocument.ToString()}");
+
+                await BotClient.SendTextMessageAsync(chatId,
+                    $"If data incorrect just send document again, If correct - press Generate Price Quotation button",
+                    replyMarkup: Keyboard.ConfirmButtonMarkup);
             }
             catch (Exception e)
             {
