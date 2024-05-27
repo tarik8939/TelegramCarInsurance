@@ -10,10 +10,10 @@
 
 ### Links 
 - Bot - https://t.me/TarasCarInsuranceBot.
-- Video demonstrating - https://youtu.be/2AnhB53CUU8.
+- Video demonstrating - https://youtu.be/XcHoxOTl0y4.
 - Bot workflow - https://ibb.co/PrcR6WR. I am not sure if this is correct workflow.
 
 ### How to improve 
 - More flexible data validation and error handling.
 
-##### If you have any questions or problems with ngrok, please contact me at E-mail: horilchaniytaras@gmail.com or Skype: live:.cid.77d6aebe9b034f79
+##### If you have any questions, problems with ngrok or API keys, please contact me at E-mail: horilchaniytaras@gmail.com or Skype: live:.cid.77d6aebe9b034f79
