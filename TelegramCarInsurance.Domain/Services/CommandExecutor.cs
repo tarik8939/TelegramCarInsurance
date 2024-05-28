@@ -49,14 +49,14 @@ namespace TelegramCarInsurance.Domain.Services
         /// <summary>
         /// Method that calling command execution
         /// </summary>
-        /// <param name="update">gfhfgh</param>
+        /// <param name="update"></param>
         /// <returns></returns>
         public async Task GetUpdate(Update update)
         {
-            //TODO: add exception for updateType
             if (update.Type == UpdateType.Message)
             {
                 Message msg = update.Message;
+
                 try
                 {
                     // If statement for MessageType.Text messages
@@ -65,7 +65,6 @@ namespace TelegramCarInsurance.Domain.Services
                         //Checking for the existence of a command
                         try
                         {
-                            //TODO:add exceptions for regex
                             if (RegexService.IsQuestion(msg.Text))
                             {
                                 await Commands

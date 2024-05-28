@@ -22,7 +22,6 @@ namespace TelegramCarInsurance.Domain.Abstractions
         /// Method thad execute command's logic
         /// </summary>
         /// <param name="message"></param>
-        /// <returns></returns>
         public Task Execute(Message message);
     }
 }

@@ -17,22 +17,33 @@ namespace TelegramCarInsurance.Domain.Commands
         public TelegramBotClient BotClient { get; set; }
 
         /// <summary>
-        /// UserDataStorage instance
+        /// UserDataStorage instance to manage user data
         /// </summary>
         private UserDataStorage Storage { get; set; }
         public string Name => CommandsName.WatchDataCommand;
+
+        /// <summary>
+        /// Constructor to initialize the WatchDataCommand with dependencies
+        /// </summary>
+        /// <param name="botClient">Instance of TelegramBotClient</param>
+        /// <param name="storage">Instance of UserDataStorage</param>
         public WatchDataCommand(TelegramBotClient botClient, UserDataStorage storage)
         {
             BotClient = botClient;
             Storage = storage;
         }
-        
+
+        /// <summary>
+        /// Executes the command to watch user's data
+        /// </summary>
+        /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
         {
             long chatId = message.Chat.Id;
 
             try
             {
+                // Retrieve user data based on chat ID
                 var userData = Storage.GetData(chatId);
 
                 await BotClient.SendTextMessageAsync(chatId, 
@@ -45,7 +56,7 @@ namespace TelegramCarInsurance.Domain.Commands
 
                 await BotClient.SendTextMessageAsync(chatId,
                     $"If data incorrect just send documents again, If correct - press Confirm button",
-                    replyMarkup: Keyboard.ConfirmButtonMarkup);
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
             catch (KeyNotFoundException e)
             {

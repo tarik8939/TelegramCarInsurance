@@ -22,16 +22,22 @@ namespace TelegramCarInsurance.Domain.Commands
         public TelegramBotClient BotClient { get; set; }
 
         /// <summary>
-        /// UserDataStorage instance
+        /// UserDataStorage instance to manage user data
         /// </summary>
         private UserDataStorage Storage { get; set; }
 
         /// <summary>
-        /// OpenAiAPI instance
+        /// Instance of OpenAiAPI
         /// </summary>
         private OpenAIAPI OpenAiClient { get; set; }
         public string Name => CommandsName.GeneratePolicyCommand;
 
+        /// <summary>
+        /// Constructor to initialize the GeneratePolicyCommand with dependencies
+        /// </summary>
+        /// <param name="botClient">Instance of TelegramBotClient</param>
+        /// <param name="storage">Instance of UserDataStorage</param>
+        /// <param name="configuration">Configuration instance to retrieve OpenAI API key</param>
         public GeneratePolicyCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration)
         {
             BotClient = botClient;
@@ -39,15 +45,22 @@ namespace TelegramCarInsurance.Domain.Commands
             OpenAiClient = new OpenAIAPI(configuration["OpenAi_API_Key"]);
         }
 
+        /// <summary>
+        /// Executes the command to generate and send an insurance policy document
+        /// </summary>
+        /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
         {
-            long chatId = message!.Chat.Id;
-            
+            long chatId = message.Chat.Id;
+
+            // Send chat action to indicate document upload is in progress
             await BotClient.SendChatActionAsync(chatId, ChatAction.UploadDocument);
 
             try
             {
+                // Retrieve user data based on chat ID
                 var userData = Storage.GetData(chatId);
+
                 if (userData.IsConfirmed)
                 {
                     // Generate document with OpenAI
@@ -60,14 +73,14 @@ namespace TelegramCarInsurance.Domain.Commands
                         chatId: chatId,
                         document: new InputFileStream(new MemoryStream(pdf), "Policy.pdf"),
                         caption: $"Here's your Insurance Policy Issuance {message.Chat.Username}.",
-                        replyMarkup: Keyboard.ConfirmButtonMarkup
+                        replyMarkup: Keyboard.BasicButtonMarkup
                     );
                 }
                 else
                 {
                     await BotClient.SendTextMessageAsync(chatId,
                         $"${message.Chat.Username} sorry, but you didn't confirm your personal data, please press Confirm button",
-                        replyMarkup: Keyboard.ConfirmButtonMarkup);
+                        replyMarkup: Keyboard.BasicButtonMarkup);
                 }
 
             }
@@ -79,10 +92,10 @@ namespace TelegramCarInsurance.Domain.Commands
         }
 
         /// <summary>
-        /// Method for generate PDF file for policy
+        /// Method for generating a PDF file for the policy
         /// </summary>
-        /// <param name="inputText"></param>
-        /// <returns></returns>
+        /// <param name="inputText">The text content to be included in the PDF</param>
+        /// <returns>Byte array representing the PDF file</returns>
         private byte[] GeneratePDF(string inputText)
         {
             using (MemoryStream ms = new MemoryStream())
@@ -102,11 +115,11 @@ namespace TelegramCarInsurance.Domain.Commands
         }
 
         /// <summary>
-        /// Method for generate policy document with OpenAI API
+        /// Method for generating a policy document using the OpenAI API
         /// </summary>
-        /// <param name="userData"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <param name="userData">User data used to generate the document</param>
+        /// <returns>A string representing the generated policy document</returns>
+        /// <exception cref="Exception">Throws an exception if there is an issue generating the document</exception>
         private async Task<string> GeneratePolicyDocumentAsync(CarUserData userData)
         {
             var passport = userData.PassportDocument;

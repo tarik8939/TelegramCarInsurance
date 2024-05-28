@@ -15,8 +15,7 @@ public class RegexService
     /// <summary>
     /// Method for check if command is question
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
+    /// <param name="input">A string to regex</param>
     public bool IsQuestion(string input)
     {
         Regex regex = new Regex(QuestionPattern, RegexOptions.IgnoreCase);

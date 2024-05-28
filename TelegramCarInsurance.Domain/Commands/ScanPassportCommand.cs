@@ -25,17 +25,27 @@ namespace TelegramCarInsurance.Domain.Commands
         public TelegramBotClient BotClient { get; set; }
 
         /// <summary>
-        /// MindeeClient instance
+        /// MineeClient instance to extract data
         /// </summary>
         private MindeeClient MindeeClient { get; set; }
- 
+
         /// <summary>
-        /// UserDataStorage instance
+        /// UserDataStorage instance to manage user data
         /// </summary>
-        private UserDataStorage Storage { get; set; }   
+        private UserDataStorage Storage { get; set; }
+
+        /// <summary>
+        /// Property to hold the configuration settings
+        /// </summary>
         private IConfiguration Configuration { get; }    
         public string Name => CommandsName.ScanPassportCommand;
 
+        /// <summary>
+        /// Constructor to initialize the ScanPassportCommand with dependencies
+        /// </summary>
+        /// <param name="botClient">Instance of TelegramBotClient</param>
+        /// <param name="storage">Instance of UserDataStorage</param>
+        /// <param name="configuration">Configuration instance to retrieve OpenAI API key</param>
         public ScanPassportCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration)
         {
             BotClient = botClient;
@@ -44,11 +54,16 @@ namespace TelegramCarInsurance.Domain.Commands
             MindeeClient = new MindeeClient(Configuration["Mindee_API_Key"]);
         }
 
+        /// <summary>
+        /// Executes the command to scan passport data
+        /// </summary>
+        /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
         {
             long chatId = message.Chat.Id;
             string fileId;
 
+            // Check the message type and get the file ID
             if (message.Type == MessageType.Photo)
             {
                 fileId = message.Photo[2].FileId;
@@ -58,12 +73,13 @@ namespace TelegramCarInsurance.Domain.Commands
                 fileId = message.Document?.FileId;
 
             }
-            
+
+            // Get file information from Telegram
             var fileInfo = await BotClient.GetFileAsync(fileId);
             var filePath = fileInfo.FilePath;
             var uriToDownload = $"https://api.telegram.org/file/bot{Configuration["Telegram_token"]}/{filePath}";
 
-            //Downloading document from telegram's server
+            // Download the document from Telegram's server
             using (var httpClient = new HttpClient())
             {
                 using (var httpResponse = await httpClient.GetAsync(uriToDownload))
@@ -72,9 +88,10 @@ namespace TelegramCarInsurance.Domain.Commands
                     {
                         await BotClient.SendTextMessageAsync(chatId, 
                             "Unable to upload passport photo",
-                            replyMarkup: Keyboard.ConfirmButtonMarkup);
+                            replyMarkup: Keyboard.BasicButtonMarkup);
                     }
-                    
+
+                    // Read the content stream from the response
                     using (var contentStream = await httpResponse.Content.ReadAsStreamAsync())
                     {
                         try
@@ -82,29 +99,33 @@ namespace TelegramCarInsurance.Domain.Commands
                             string fileName = "myfile.jpg";
                             var inputSource = new LocalInputSource(contentStream, fileName);
 
+                            // Parse the passport data using MindeeClient
                             var response = await MindeeClient
                                 .ParseAsync<PassportV1>(inputSource);
 
+                            // Extract passport information from the response
                             var passportInfo = response.Document.Inference.Prediction;
 
+                            // Store the extracted data in user data storage
                             Storage.AddData(chatId, passportInfo);
 
                             await BotClient.SendTextMessageAsync(chatId,
                                 $"Extracted data from passport:\n{passportInfo}\nIf data incorrect just send document again",
-                                replyMarkup: Keyboard.ConfirmButtonMarkup);
+                                replyMarkup: Keyboard.BasicButtonMarkup);
 
                         }
                         catch (MindeeException e)
                         {
+                            // Handle Mindee specific exceptions
                             await BotClient.SendTextMessageAsync(chatId,
                                 $"{e.Message}",
-                                replyMarkup: Keyboard.ConfirmButtonMarkup);
+                                replyMarkup: Keyboard.BasicButtonMarkup);
                         }
                         catch (Exception e)
                         {
                             await BotClient.SendTextMessageAsync(chatId,
                                 $"{e.Message}",
-                                replyMarkup: Keyboard.ConfirmButtonMarkup);
+                                replyMarkup: Keyboard.BasicButtonMarkup);
                         }
                     }
                 }

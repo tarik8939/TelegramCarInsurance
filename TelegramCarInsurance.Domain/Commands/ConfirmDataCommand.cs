@@ -15,24 +15,35 @@ namespace TelegramCarInsurance.Domain.Commands
     {
         public TelegramBotClient BotClient { get; set; }
         /// <summary>
-        /// UserDataStorage instance
+        /// UserDataStorage instance to manage user data
         /// </summary>
         private UserDataStorage Storage { get; set; }
         public string Name => CommandsName.ConfirmDataCommand;
 
+        /// <summary>
+        /// Constructor to initialize the ConfirmDataCommand with dependencies
+        /// </summary>
+        /// <param name="botClient">Instance of TelegramBotClient</param>
+        /// <param name="storage">Instance of UserDataStorage</param>
         public ConfirmDataCommand(TelegramBotClient botClient, UserDataStorage storage)
         {
             BotClient = botClient;
             Storage = storage;
         }
 
+        /// <summary>
+        /// Executes the command to confirm with extracted data
+        /// </summary>
+        /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
         {
             long chatId = message.Chat.Id;
 
             try
             {
+                // Retrieve user data based on chat ID
                 var userData = Storage.GetData(chatId);
+
                 if (userData.IsDataFilled())
                 {
                     userData.ConfirmData();
@@ -48,7 +59,7 @@ namespace TelegramCarInsurance.Domain.Commands
                             $"{message.Chat.Username} sorry, but i don't have data about your license plate, try upload it again" : null)}" +
                         $"{(userData.PassportDocument == null ? 
                             $"{message.Chat.Username} sorry, but i don't have data about your passport, try upload it again" : null)}", 
-                        replyMarkup:Keyboard.ConfirmButtonMarkup);
+                        replyMarkup:Keyboard.BasicButtonMarkup);
                 }
 
             }

@@ -9,6 +9,7 @@ namespace TelegramCarInsurance.Domain;
 /// </summary>
 public class TelegramBot
 {
+    // Property to hold the configuration settings
     private IConfiguration Configuration { get; set; }
 
     public TelegramBot(IConfiguration configuration)

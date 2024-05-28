@@ -16,30 +16,40 @@ namespace TelegramCarInsurance.Domain.Commands
         public TelegramBotClient BotClient { get; set; }
 
         /// <summary>
-        /// UserDataStorage instance
+        /// UserDataStorage instance to manage user data
         /// </summary>
         private UserDataStorage Storage { get; set; }
         public string Name => CommandsName.GeneratePriceQuotationCommand;
 
+        /// <summary>
+        /// Constructor to initialize the GeneratePriceQuotationCommand with dependencies
+        /// </summary>
+        /// <param name="botClient">Instance of TelegramBotClient</param>
+        /// <param name="storage">Instance of UserDataStorage</param>
         public GeneratePriceQuotationCommand(TelegramBotClient botClient, UserDataStorage storage)
         {
             Storage = storage;
             BotClient = botClient;
         }
 
+        /// <summary>
+        /// Executes the command to generate price quotation command
+        /// </summary>
+        /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
         {
             long chatId = message.Chat.Id;
 
             try
             {
+                // Retrieve user data based on chat ID
                 var userData = Storage.GetData(chatId);
 
                 if (userData.IsConfirmed == false)
                 {
                     await BotClient.SendTextMessageAsync(chatId,
                         $"${message.Chat.Username} sorry, buy you didn't confirm your personal data, please press Confirm button",
-                        replyMarkup: Keyboard.ConfirmButtonMarkup);
+                        replyMarkup: Keyboard.BasicButtonMarkup);
                 }
                 else
                 {

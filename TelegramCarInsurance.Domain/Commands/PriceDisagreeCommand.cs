@@ -14,11 +14,20 @@ namespace TelegramCarInsurance.Domain.Commands
     {
         public TelegramBotClient BotClient { get; set; }
         public string Name => CommandsName.PriceDisagreeCommand;
+
+        /// <summary>
+        /// Constructor to initialize the PriceDisagreeCommand with dependencies
+        /// </summary>
+        /// <param name="botClient">Instance of TelegramBotClient</param>
         public PriceDisagreeCommand(TelegramBotClient botClient)
         {
             BotClient = botClient;
         }
 
+        /// <summary>
+        /// Executes the command to disagree with price
+        /// </summary>
+        /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
         {
             long chatId = message.Chat.Id;

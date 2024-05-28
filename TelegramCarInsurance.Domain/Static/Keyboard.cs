@@ -12,7 +12,7 @@ namespace TelegramCarInsurance.Domain.Static
     /// </summary>
     public static class Keyboard
     {
-        public static ReplyKeyboardMarkup ConfirmButtonMarkup = new ReplyKeyboardMarkup(new[]
+        public static ReplyKeyboardMarkup BasicButtonMarkup = new ReplyKeyboardMarkup(new[]
         {
             new []
             {
