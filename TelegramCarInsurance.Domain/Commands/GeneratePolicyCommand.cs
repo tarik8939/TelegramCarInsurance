@@ -66,7 +66,7 @@ namespace TelegramCarInsurance.Domain.Commands
                 else
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        $"${message.Chat.Username} sorry, buy you didn't confirm your personal data, please press Confirm button",
+                        $"${message.Chat.Username} sorry, but you didn't confirm your personal data, please press Confirm button",
                         replyMarkup: Keyboard.ConfirmButtonMarkup);
                 }
 

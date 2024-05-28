@@ -25,13 +25,18 @@ namespace TelegramCarInsurance.Domain.Services
         /// </summary>
         private List<ICommand> Commands { get; }
 
-        public CommandExecutor(TelegramBot botClient, UserDataStorage userDataStorage, IConfiguration configuration)
+        private RegexService RegexService { get; }
+
+        public CommandExecutor(TelegramBot botClient, UserDataStorage userDataStorage, IConfiguration configuration, RegexService regexService)
         {
+            RegexService = regexService;
+
             Commands = new List<ICommand>
             {
                 new StartCommand(botClient.GetClient()),
                 new PriceDisagreeCommand(botClient.GetClient()),
                 new ErrorCommand(botClient.GetClient()),
+                new QuestionCommand(botClient.GetClient(), configuration),
                 new ConfirmDataCommand(botClient.GetClient(), userDataStorage),
                 new GeneratePriceQuotationCommand(botClient.GetClient(), userDataStorage),
                 new WatchDataCommand(botClient.GetClient(), userDataStorage),
@@ -48,7 +53,7 @@ namespace TelegramCarInsurance.Domain.Services
         /// <returns></returns>
         public async Task GetUpdate(Update update)
         {
-            //add exception for updateType
+            //TODO: add exception for updateType
             if (update.Type == UpdateType.Message)
             {
                 Message msg = update.Message;
@@ -60,14 +65,25 @@ namespace TelegramCarInsurance.Domain.Services
                         //Checking for the existence of a command
                         try
                         {
-                            var command = Commands
-                                .FirstOrDefault(x => x.Name.ToLower() == msg.Text.ToLower());
-
-                            if (command == null)
+                            //TODO:add exceptions for regex
+                            if (RegexService.IsQuestion(msg.Text))
                             {
-                                throw new NotExistingCommandException(msg.Chat.Username, msg.Text);
+                                await Commands
+                                    .First(x => x.Name == CommandsName.QuestionCommand)
+                                    .Execute(msg);
                             }
-                            else await command.Execute(msg);
+                            else
+                            {
+                                var command = Commands
+                                    .FirstOrDefault(x => x.Name.ToLower() == msg.Text.ToLower());
+
+                                if (command == null)
+                                {
+                                    throw new NotExistingCommandException(msg.Chat.Username, msg.Text);
+                                }
+                                else await command.Execute(msg);
+                            }
+
                         }
                         catch (NotExistingCommandException e)
                         {

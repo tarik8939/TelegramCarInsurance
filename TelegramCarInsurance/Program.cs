@@ -17,6 +17,7 @@ public class Program
         builder.Services.AddSingleton<TelegramBot>();
         builder.Services.AddSingleton<CommandExecutor>();
         builder.Services.AddSingleton<UserDataStorage>();
+        builder.Services.AddSingleton<RegexService>();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 

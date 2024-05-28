@@ -44,8 +44,10 @@ namespace TelegramCarInsurance.Domain.Commands
                 else
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        $"{(userData.LicensePlateDocument == null ? $"{message.Chat.Username} sorry, but i don't have data about your license plate, try upload it again" : null)}" +
-                        $"{(userData.PassportDocument == null ? $"{message.Chat.Username} sorry, but i don't have data about your passport, try upload it again" : null)}", 
+                        $"{(userData.LicensePlateDocument == null ? 
+                            $"{message.Chat.Username} sorry, but i don't have data about your license plate, try upload it again" : null)}" +
+                        $"{(userData.PassportDocument == null ? 
+                            $"{message.Chat.Username} sorry, but i don't have data about your passport, try upload it again" : null)}", 
                         replyMarkup:Keyboard.ConfirmButtonMarkup);
                 }
 

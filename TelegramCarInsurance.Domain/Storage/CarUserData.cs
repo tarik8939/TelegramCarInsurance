@@ -15,6 +15,9 @@ namespace TelegramCarInsurance.Domain.Storage
     {
         public LicensePlateV1Document LicensePlateDocument { get; set; }
         public PassportV1Document PassportDocument { get; set; }
+        /// <summary>
+        /// Is all user's data confirmed
+        /// </summary>
         public bool IsConfirmed { get; set; }
 
         public CarUserData(LicensePlateV1Document licensePlateDocument, PassportV1Document passportDocument)
@@ -25,7 +28,7 @@ namespace TelegramCarInsurance.Domain.Storage
         }
 
         /// <summary>
-        /// Function that checks whether the user has downloaded all the information
+        /// Method that checks whether the user has downloaded all the information
         /// </summary>
         /// <returns>bool</returns>
         public bool IsDataFilled()
@@ -33,6 +36,9 @@ namespace TelegramCarInsurance.Domain.Storage
             return LicensePlateDocument != null && PassportDocument != null;
         }
 
+        /// <summary>
+        /// Method that confirms the data
+        /// </summary>
         public void ConfirmData()
         {
             IsConfirmed = true;

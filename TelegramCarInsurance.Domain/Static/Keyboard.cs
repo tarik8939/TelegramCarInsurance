@@ -14,8 +14,15 @@ namespace TelegramCarInsurance.Domain.Static
     {
         public static ReplyKeyboardMarkup ConfirmButtonMarkup = new ReplyKeyboardMarkup(new[]
         {
-            new KeyboardButton(text:CommandsName.WatchDataCommand),
-            new KeyboardButton(text:CommandsName.ConfirmDataCommand)
+            new []
+            {
+                new KeyboardButton(text:CommandsName.WatchDataCommand),
+                new KeyboardButton(text:CommandsName.ConfirmDataCommand)
+            },
+            new []
+            {
+                new KeyboardButton(text:CommandsName.QuestionCommand),
+            },
 
         })
         { ResizeKeyboard = true };
@@ -30,6 +37,7 @@ namespace TelegramCarInsurance.Domain.Static
             new []
             {
                 new KeyboardButton(text:CommandsName.WatchDataCommand),
+                new KeyboardButton(text:CommandsName.QuestionCommand),
             },
 
         })
@@ -45,6 +53,7 @@ namespace TelegramCarInsurance.Domain.Static
                 new []
                 {
                     new KeyboardButton(text:CommandsName.WatchDataCommand),
+                    new KeyboardButton(text:CommandsName.QuestionCommand),
                 }
             }) { ResizeKeyboard = true };
 

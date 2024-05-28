@@ -17,7 +17,7 @@ public class TelegramBot
     }
 
     /// <summary>
-    /// Function that returns TelegramBot client
+    /// Method that returns TelegramBot client
     /// </summary>
     /// <returns>TelegramBotClient</returns>
     public TelegramBotClient GetClient()

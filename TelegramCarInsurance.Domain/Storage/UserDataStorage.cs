@@ -16,7 +16,7 @@ namespace TelegramCarInsurance.Domain.Storage
         private Dictionary<long, CarUserData> UserCollection = new Dictionary<long, CarUserData>();
 
         /// <summary>
-        /// Function that returns information about the user by ChatId
+        /// Method that returns information about the user by ChatId
         /// </summary>
         /// <param name="key">ChatId</param>
         /// <returns>CarUserData</returns>
@@ -40,7 +40,7 @@ namespace TelegramCarInsurance.Domain.Storage
         }
 
         /// <summary>
-        /// Function that adds user information to the structure
+        /// Method that adds user information to the structure
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -60,7 +60,7 @@ namespace TelegramCarInsurance.Domain.Storage
         }
 
         /// <summary>
-        /// Function that adds user information to the structure
+        /// Method that adds user information to the structure
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
