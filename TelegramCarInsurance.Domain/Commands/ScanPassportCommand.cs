@@ -17,6 +17,7 @@ using TelegramCarInsurance.Domain.Static;
 using Microsoft.Extensions.Configuration;
 using Mindee.Exceptions;
 using System.Reflection;
+using TelegramCarInsurance.Domain.MyExceptions;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
@@ -68,11 +69,12 @@ namespace TelegramCarInsurance.Domain.Commands
             {
                 fileId = message.Photo[2].FileId;
             }
-            else
+            else if (message.Type == MessageType.Document)
             {
                 fileId = message.Document?.FileId;
 
             }
+            else throw new NotUploadedDocumentException(message.Chat.Username, message.Text);
 
             // Get file information from Telegram
             var fileInfo = await BotClient.GetFileAsync(fileId);

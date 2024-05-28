@@ -56,9 +56,9 @@ namespace TelegramCarInsurance.Domain.Commands
                 {
                     await BotClient.SendTextMessageAsync(chatId,
                         $"{(userData.LicensePlateDocument == null ? 
-                            $"{message.Chat.Username} sorry, but i don't have data about your license plate, try upload it again" : null)}" +
-                        $"{(userData.PassportDocument == null ? 
-                            $"{message.Chat.Username} sorry, but i don't have data about your passport, try upload it again" : null)}", 
+                            String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "license plate") : null)}" +
+                        $"{(userData.PassportDocument == null ?
+                            String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "passport") : null)}", 
                         replyMarkup:Keyboard.BasicButtonMarkup);
                 }
 
@@ -73,13 +73,6 @@ namespace TelegramCarInsurance.Domain.Commands
                 await BotClient.SendTextMessageAsync(chatId,
                     e.Message);
             }
-
-
-
-
-            //var asd = 5;
-            //await BotClient.SendTextMessageAsync(update.MyChatMember.From.Id,
-            //    $"Bye {update.MyChatMember.From.Username}, see you soon");
         }
     }
 }

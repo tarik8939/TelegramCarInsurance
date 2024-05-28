@@ -53,6 +53,7 @@ namespace TelegramCarInsurance.Domain.Services
         /// <returns></returns>
         public async Task GetUpdate(Update update)
         {
+            // If statement for UpdateType
             if (update.Type == UpdateType.Message)
             {
                 Message msg = update.Message;
@@ -62,9 +63,10 @@ namespace TelegramCarInsurance.Domain.Services
                     // If statement for MessageType.Text messages
                     if (msg.Type == MessageType.Text)
                     {
-                        //Checking for the existence of a command
+                        // Checking for the existence of a command
                         try
                         {
+                            // If statement for a question
                             if (RegexService.IsQuestion(msg.Text))
                             {
                                 await Commands
@@ -74,7 +76,7 @@ namespace TelegramCarInsurance.Domain.Services
                             else
                             {
                                 var command = Commands
-                                    .FirstOrDefault(x => x.Name.ToLower() == msg.Text.ToLower());
+                                    .FirstOrDefault(x => RegexService.CompareCommand(x.Name, msg.Text));
 
                                 if (command == null)
                                 {
@@ -85,6 +87,11 @@ namespace TelegramCarInsurance.Domain.Services
 
                         }
                         catch (NotExistingCommandException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message);
+                        }
+                        catch (NotUploadedDocumentException e)
                         {
                             var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                             await command.Execute(msg, e.Message);
@@ -101,12 +108,13 @@ namespace TelegramCarInsurance.Domain.Services
                     {
                         try
                         {
+                            // If statement for document's caption
                             if (msg.Caption != null)
                             {
                                 try
                                 {
                                     var command = Commands
-                                        .FirstOrDefault(x => x.Name.ToLower() == msg.Caption.ToLower());
+                                        .FirstOrDefault(x => RegexService.CompareCommand(x.Name, msg.Caption));
 
                                     if (command == null)
                                     {
