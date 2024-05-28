@@ -10,7 +10,7 @@ using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
-    public class ErrorCommand : ICommand
+    public class ErrorCommand : ICommand, IErrorCommand
     {
         public TelegramBotClient BotClient { get; set; }
         public string Name => CommandsName.ErrorCommand;
@@ -19,13 +19,32 @@ namespace TelegramCarInsurance.Domain.Commands
             BotClient = botClient;
         }
 
-        public async Task Execute(Update update)
+        /// <summary>
+        /// Default error
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        async Task ICommand.Execute(Message message)
         {
-            long chatId = update.Message!.Chat.Id;
+            long chatId = message!.Chat.Id;
 
             await BotClient.SendTextMessageAsync(chatId,
-            $"Oops, we don't support this type of message", 
-            replyMarkup:Keyboard.ConfirmButtonMarkup);
+                String.Format(StaticErrors.NotExistingCommand,
+                    message.Chat.Username));
+        }
+
+        /// <summary>
+        /// Custom error 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        async Task IErrorCommand.Execute(Message message, string text)
+        {
+            long chatId = message!.Chat.Id;
+
+            await BotClient.SendTextMessageAsync(chatId,
+                text);
         }
     }
 }

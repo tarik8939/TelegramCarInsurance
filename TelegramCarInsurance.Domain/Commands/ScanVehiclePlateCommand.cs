@@ -14,6 +14,7 @@ using TelegramCarInsurance.Domain.Storage;
 using TelegramCarInsurance.Domain.Static;
 using Microsoft.Extensions.Configuration;
 using Mindee.Exceptions;
+using Telegram.Bot.Types.Enums;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
@@ -41,11 +42,21 @@ namespace TelegramCarInsurance.Domain.Commands
             MindeeClient = new MindeeClient(Configuration["Mindee_API_Key"]);
         }
 
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            long chatId = update.Message.Chat.Id;
+            long chatId = message.Chat.Id;
+            string fileId;
 
-            var fileId = update.Message.Document.FileId;
+            if (message.Type == MessageType.Photo)
+            {
+                fileId = message.Photo[2].FileId;
+            }
+            else
+            {
+                fileId = message.Document?.FileId;
+
+            }
+
             var fileInfo = await BotClient.GetFileAsync(fileId);
             var filePath = fileInfo.FilePath;
             var uriToDownload = $"https://api.telegram.org/file/bot{Configuration["Telegram_token"]}/{filePath}";
@@ -79,6 +90,8 @@ namespace TelegramCarInsurance.Domain.Commands
                             await BotClient.SendTextMessageAsync(chatId,
                                 $"Extracted data from vehicle plate:\n{vehicleInfo}\nIf data incorrect just send document again",
                                 replyMarkup: Keyboard.ConfirmButtonMarkup);
+
+
                         }
                         catch (MindeeException e)
                         {

@@ -15,11 +15,13 @@ namespace TelegramCarInsurance.Domain.Storage
     {
         public LicensePlateV1Document LicensePlateDocument { get; set; }
         public PassportV1Document PassportDocument { get; set; }
+        public bool IsConfirmed { get; set; }
 
         public CarUserData(LicensePlateV1Document licensePlateDocument, PassportV1Document passportDocument)
         {
             LicensePlateDocument = licensePlateDocument;
             PassportDocument = passportDocument;
+            IsConfirmed = false;
         }
 
         /// <summary>
@@ -29,6 +31,11 @@ namespace TelegramCarInsurance.Domain.Storage
         public bool IsDataFilled()
         {
             return LicensePlateDocument != null && PassportDocument != null;
+        }
+
+        public void ConfirmData()
+        {
+            IsConfirmed = true;
         }
     }
 

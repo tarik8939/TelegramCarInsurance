@@ -14,12 +14,15 @@ namespace TelegramCarInsurance.Domain.Abstractions
         /// TelegramBot instance
         /// </summary>
         public TelegramBotClient BotClient { get; set; }
+        /// <summary>
+        /// Command's name
+        /// </summary>
         public string Name { get; }
         /// <summary>
         /// Method thad execute command's logic
         /// </summary>
-        /// <param name="update"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
-        public Task Execute(Update update);
+        public Task Execute(Message message);
     }
 }

@@ -16,5 +16,6 @@ namespace TelegramCarInsurance.Domain.Static
         public static string ScanPassportCommand => "/passport";
         public static string ScanVehiclePlateCommand => "/vehicle";
         public static string WatchDataCommand => "Watch data";
+        public static string ConfirmDataCommand => "Confirm";
     }
 }

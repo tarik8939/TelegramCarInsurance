@@ -39,27 +39,37 @@ namespace TelegramCarInsurance.Domain.Commands
             OpenAiClient = new OpenAIAPI(configuration["OpenAi_API_Key"]);
         }
 
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            long chatId = update.Message!.Chat.Id;
+            long chatId = message!.Chat.Id;
             
             await BotClient.SendChatActionAsync(chatId, ChatAction.UploadDocument);
 
             try
             {
                 var userData = Storage.GetData(chatId);
-                // Generate document with OpenAI
-                string document = await GeneratePolicyDocumentAsync(userData);
+                if (userData.IsConfirmed)
+                {
+                    // Generate document with OpenAI
+                    string document = await GeneratePolicyDocumentAsync(userData);
 
-                // Create PDF file
-                var pdf = GeneratePDF(document);
+                    // Create PDF file
+                    var pdf = GeneratePDF(document);
 
-                await BotClient.SendDocumentAsync(
-                    chatId: chatId,
-                    document: new InputFileStream(new MemoryStream(pdf), "Policy.pdf"),
-                    caption: $"Here's your Insurance Policy Issuance {update.Message.Chat.Username}.", 
-                    replyMarkup:Keyboard.ConfirmButtonMarkup
-                );
+                    await BotClient.SendDocumentAsync(
+                        chatId: chatId,
+                        document: new InputFileStream(new MemoryStream(pdf), "Policy.pdf"),
+                        caption: $"Here's your Insurance Policy Issuance {message.Chat.Username}.",
+                        replyMarkup: Keyboard.ConfirmButtonMarkup
+                    );
+                }
+                else
+                {
+                    await BotClient.SendTextMessageAsync(chatId,
+                        $"${message.Chat.Username} sorry, buy you didn't confirm your personal data, please press Confirm button",
+                        replyMarkup: Keyboard.ConfirmButtonMarkup);
+                }
+
             }
             catch (Exception e)
             {
@@ -115,7 +125,7 @@ namespace TelegramCarInsurance.Domain.Commands
             {
                 Prompt = prompt,
                 Model = "gpt-3.5-turbo-instruct",
-                MaxTokens = 1000
+                MaxTokens = 2000
             };
 
             // Request completion from OpenAI API

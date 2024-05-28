@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mindee.Product.Passport;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,20 +27,30 @@ namespace TelegramCarInsurance.Domain.Commands
             Storage = storage;
         }
         
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            long chatId = update.Message.Chat.Id;
+            long chatId = message.Chat.Id;
 
             try
             {
                 var userData = Storage.GetData(chatId);
-                await BotClient.SendTextMessageAsync(chatId,
-                        $"Car's plate data:\n{userData.LicensePlateDocument.ToString()}" +
-                        $"Your personal data:\n{userData.PassportDocument.ToString()}");
+
+                await BotClient.SendTextMessageAsync(chatId, 
+                    $"{(userData.LicensePlateDocument == null ?
+                        $"{message.Chat.Username} sorry, but i don't have data about your license plate, try upload it again\n" :
+                        $"Car's plate data:\n{userData.LicensePlateDocument}")}" +
+                    $"{(userData.PassportDocument == null ?
+                        $"{message.Chat.Username} sorry, but i don't have data about your passport, try upload it again\n" :
+                        $"Car's plate data:\n{userData.PassportDocument}")}");
 
                 await BotClient.SendTextMessageAsync(chatId,
-                    $"If data incorrect just send document again, If correct - press Generate Price Quotation button",
+                    $"If data incorrect just send documents again, If correct - press Confirm button",
                     replyMarkup: Keyboard.ConfirmButtonMarkup);
+            }
+            catch (KeyNotFoundException e)
+            {
+                await BotClient.SendTextMessageAsync(chatId,
+                    String.Format(e.Message, message.Chat.Username));
             }
             catch (Exception e)
             {

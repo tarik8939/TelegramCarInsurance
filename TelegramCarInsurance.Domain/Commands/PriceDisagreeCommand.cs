@@ -14,17 +14,16 @@ namespace TelegramCarInsurance.Domain.Commands
     {
         public TelegramBotClient BotClient { get; set; }
         public string Name => CommandsName.PriceDisagreeCommand;
-
         public PriceDisagreeCommand(TelegramBotClient botClient)
         {
             BotClient = botClient;
         }
 
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            long chatId = update.Message.Chat.Id;
+            long chatId = message.Chat.Id;
 
-            await BotClient.SendTextMessageAsync(chatId, "Sorry, but 100 USD is the only available price for a car insurance policy",
+            await BotClient.SendTextMessageAsync(chatId, $"{message.Chat.Username} sorry, but 100 USD is the only available price for a car insurance policy",
                 replyMarkup:Keyboard.PriceConfirmationMarkup);
 
         }

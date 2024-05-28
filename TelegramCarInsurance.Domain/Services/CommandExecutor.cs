@@ -9,6 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramCarInsurance.Domain.Abstractions;
 using TelegramCarInsurance.Domain.Commands;
+using TelegramCarInsurance.Domain.MyExceptions;
 using TelegramCarInsurance.Domain.Static;
 using TelegramCarInsurance.Domain.Storage;
 
@@ -23,24 +24,15 @@ namespace TelegramCarInsurance.Domain.Services
         /// List with all commands
         /// </summary>
         private List<ICommand> Commands { get; }
-        /// <summary>
-        /// TelegramBot instance
-        /// </summary>
-        private TelegramBotClient TgBot { get; }
-        /// <summary>
-        /// UserDataStorage instance
-        /// </summary>
-        private UserDataStorage Storage { get; }
-        private IConfiguration Configuration { get; }
 
         public CommandExecutor(TelegramBot botClient, UserDataStorage userDataStorage, IConfiguration configuration)
         {
-            Configuration = configuration;
             Commands = new List<ICommand>
             {
                 new StartCommand(botClient.GetClient()),
                 new PriceDisagreeCommand(botClient.GetClient()),
                 new ErrorCommand(botClient.GetClient()),
+                new ConfirmDataCommand(botClient.GetClient(), userDataStorage),
                 new GeneratePriceQuotationCommand(botClient.GetClient(), userDataStorage),
                 new WatchDataCommand(botClient.GetClient(), userDataStorage),
                 new ScanPassportCommand(botClient.GetClient(), userDataStorage, configuration),
@@ -56,37 +48,106 @@ namespace TelegramCarInsurance.Domain.Services
         /// <returns></returns>
         public async Task GetUpdate(Update update)
         {
-            Message msg = update.Message;
-
-            // If statement for MessageType.Text messages
-            if (msg.Type == MessageType.Text)
+            //add exception for updateType
+            if (update.Type == UpdateType.Message)
             {
+                Message msg = update.Message;
                 try
                 {
-                    await Commands
-                        .First(x => x.Name.ToLower() == msg.Text.ToLower())!
-                        .Execute(update);
+                    // If statement for MessageType.Text messages
+                    if (msg.Type == MessageType.Text)
+                    {
+                        //Checking for the existence of a command
+                        try
+                        {
+                            var command = Commands
+                                .FirstOrDefault(x => x.Name.ToLower() == msg.Text.ToLower());
+
+                            if (command == null)
+                            {
+                                throw new NotExistingCommandException(msg.Chat.Username, msg.Text);
+                            }
+                            else await command.Execute(msg);
+                        }
+                        catch (NotExistingCommandException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message);
+                        }
+                        catch (Exception e)
+                        {
+                            await Commands
+                                .First(x => x.Name == CommandsName.ErrorCommand)
+                                .Execute(msg);
+                        }
+                    }
+                    // If statement for MessageType.Document messages
+                    else if (msg.Type == MessageType.Document || msg.Type == MessageType.Photo)
+                    {
+                        try
+                        {
+                            if (msg.Caption != null)
+                            {
+                                try
+                                {
+                                    var command = Commands
+                                        .FirstOrDefault(x => x.Name.ToLower() == msg.Caption.ToLower());
+
+                                    if (command == null)
+                                    {
+                                        throw new UnsupportedTypeDocumentException(msg.Chat.Username,
+                                            msg.Caption);
+                                    }
+                                    else await command.Execute(msg);
+                                }
+                                catch (UnsupportedTypeDocumentException e)
+                                {
+                                    var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                                    await command.Execute(msg, e.Message);
+                                }
+                                catch (Exception e)
+                                {
+                                    await Commands
+                                        .First(x => x.Name == CommandsName.ErrorCommand)
+                                        .Execute(msg);
+                                }
+                            }
+                            else
+                            {
+                                throw new UnknownTypeDocumentException(msg.Chat.Username);
+                            }
+                        }
+                        catch (UnknownTypeDocumentException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message);
+                        }
+                        catch (Exception e)
+                        {
+                            await Commands
+                                .First(x => x.Name == CommandsName.ErrorCommand)
+                                .Execute(msg);
+                        }
+
+                    }
+                    //If statement for unsupported type messages
+                    else
+                    {
+                        throw new UnsupportedTypeMessageException(msg.Chat.Username, msg.Type.ToString());
+                    }
+                }
+                catch (UnsupportedTypeMessageException e)
+                {
+                    var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                    await command.Execute(msg, e.Message);
                 }
                 catch (Exception e)
                 {
                     await Commands
                         .First(x => x.Name == CommandsName.ErrorCommand)
-                        .Execute(update);
+                        .Execute(msg);
                 }
-            }
-            // If statement for MessageType.Document messages
-            else if (msg.Type == MessageType.Document)
-            {
-                await Commands
-                    .First(x => x.Name.ToLower() == msg.Caption.ToLower())!
-                    .Execute(update);
-            }
-            // If statement for unsupported type messages
-            else
-            {
-                await Commands
-                    .First(x => x.Name == CommandsName.ErrorCommand)!
-                    .Execute(update);
+                
             }
 
         }

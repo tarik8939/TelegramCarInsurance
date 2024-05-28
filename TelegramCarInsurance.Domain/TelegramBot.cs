@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
 
 namespace TelegramCarInsurance.Domain;
 
@@ -21,9 +22,7 @@ public class TelegramBot
     /// <returns>TelegramBotClient</returns>
     public TelegramBotClient GetClient()
     {
-        var telegramBot = new TelegramBotClient(Configuration["Telegram_token"]);
-
-        return telegramBot;
+        return new TelegramBotClient(Configuration["Telegram_token"]);
     }
 
 }

@@ -27,16 +27,27 @@ namespace TelegramCarInsurance.Domain.Commands
             BotClient = botClient;
         }
 
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            long chatId = update.Message!.Chat.Id;
+            long chatId = message.Chat.Id;
 
             try
             {
-                Storage.GetData(chatId);
-                await BotClient.SendTextMessageAsync(chatId,
-                    "Fixed price for all insurance is 100 USD. Do you agree with this price?", 
-                    replyMarkup:Keyboard.PriceConfirmationMarkup);
+                var userData = Storage.GetData(chatId);
+
+                if (userData.IsConfirmed == false)
+                {
+                    await BotClient.SendTextMessageAsync(chatId,
+                        $"${message.Chat.Username} sorry, buy you didn't confirm your personal data, please press Confirm button",
+                        replyMarkup: Keyboard.ConfirmButtonMarkup);
+                }
+                else
+                {
+                    await BotClient.SendTextMessageAsync(chatId,
+                        "Fixed price for all insurance is 100 USD. Do you agree with this price?",
+                        replyMarkup: Keyboard.AgreePriceButtonMarkup);
+                }
+
             }
             catch (Exception e)
             {

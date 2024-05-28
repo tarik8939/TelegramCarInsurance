@@ -26,27 +26,17 @@ namespace TelegramCarInsurance.Domain.Storage
         {
             try
             {
-                var userDate = UserCollection[key];
+                return UserCollection[key];
 
-                if (userDate.IsDataFilled())
-                {
-                    return userDate;
-                }
-                else
-                {
-                    var nullDocument = userDate.LicensePlateDocument == null ? "license plate" : "passport";
-                    throw new Exception($"Please fill all data, we don't have data about your {nullDocument}");
-                }
             }
             catch (KeyNotFoundException)
             {
-                throw new KeyNotFoundException("We don't have any data about your documents");
+                throw new KeyNotFoundException("{0} sorry, but i don't have any data about your documents");
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-
         }
 
         /// <summary>
