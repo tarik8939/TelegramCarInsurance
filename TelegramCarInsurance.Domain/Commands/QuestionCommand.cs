@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Mindee;
 using OpenAI_API;
 using OpenAI_API.Completions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramCarInsurance.Domain.Abstractions;
+using TelegramCarInsurance.Domain.MyExceptions;
 using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.Commands;
@@ -22,12 +24,11 @@ public class QuestionCommand : ICommand
     /// Constructor to initialize the QuestionCommand with dependencies
     /// </summary>
     /// <param name="botClient">Instance of TelegramBotClient</param>
-    /// <param name="configuration">Configuration instance to retrieve OpenAI API key</param>
-    public QuestionCommand(TelegramBotClient botClient, IConfiguration configuration)
+    /// <param name="openAiClient">Instance of openAiClient</param>
+    public QuestionCommand(TelegramBotClient botClient, OpenAIAPI openAiClient)
     {
         BotClient = botClient;
-        OpenAiClient = new OpenAIAPI(configuration["OpenAi_API_Key"]);
-
+        OpenAiClient = openAiClient;
     }
 
     /// <summary>
@@ -38,15 +39,23 @@ public class QuestionCommand : ICommand
     {
         long chatId = message.Chat.Id;
 
-        // Send typing action to indicate that the bot is responding
-        await BotClient.SendChatActionAsync(chatId, ChatAction.Typing);
+        try
+        {
+            // Send typing action to indicate that the bot is responding
+            await BotClient.SendChatActionAsync(chatId, ChatAction.Typing);
 
-        // Generate an answer using the OpenAI API
-        var answer = await GenerateAnswer(message.Text);
+            // Generate an answer using the OpenAI API
+            var answer = await GenerateAnswer(message.Text);
 
-        // Send the generated answer back to the user
-        await BotClient.SendTextMessageAsync(chatId,
+            // Send the generated answer back to the user
+            await BotClient.SendTextMessageAsync(chatId,
                 answer);
+        }
+        catch (Exception e)
+        {
+            await BotClient.SendTextMessageAsync(chatId,
+                String.Format(StaticErrors.GenerateAnswerError, message.Chat.Username));
+        }
 
     }
 
@@ -70,15 +79,8 @@ public class QuestionCommand : ICommand
         };
 
         // Request completion from OpenAI API
-        try
-        {
-            var completionResult = await OpenAiClient.Completions.CreateCompletionAsync(completionRequest);
-            var answer = completionResult.Completions[0].Text;
-            return answer;
-        }
-        catch (Exception e)
-        {
-            throw new Exception("Oops, some trouble while generating your answer");
-        }
+        var completionResult = await OpenAiClient.Completions.CreateCompletionAsync(completionRequest);
+
+        return completionResult.Completions[0].Text;
     }
 }

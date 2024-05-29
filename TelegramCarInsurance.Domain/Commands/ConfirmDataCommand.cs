@@ -49,7 +49,7 @@ namespace TelegramCarInsurance.Domain.Commands
                     userData.ConfirmData();
 
                     await BotClient.SendTextMessageAsync(chatId,
-                        $"${message.Chat.Username} great, your data successfully confirmed, now you can generate price quotation",
+                        $"{message.Chat.Username} great, your data successfully confirmed, now you can generate price quotation",
                         replyMarkup: Keyboard.PriceConfirmationMarkup);
                 }
                 else
@@ -71,7 +71,7 @@ namespace TelegramCarInsurance.Domain.Commands
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    e.Message);
+                    String.Format(StaticErrors.DefaultError, message.Chat.Username));
             }
         }
     }

@@ -9,14 +9,11 @@
 6. And after this all you can start TelegramBot in VS on 5050 port.
 7. To extract data use prepared fake documents in `TelegramCarInsurance/fake data` folder.
 
-##### Important: in appsettings.json set `sk-proj-dr0eTCimrzKJgAa15pg2T3BlbkFJ3tBMwKS7uOlQStMJRw21` or your own token(with Credit balance) in OpenAi_API_Key because in public repository OpenAi_API_Key will be automatically disabled.
+##### Important: in appsettings.json set your own token(with Credit balance)  in OpenAi_API_Key because in public repository OpenAi_API_Key will be automatically disabled. Or write to me and I will send you active key.
 
 ### Links 
 - Bot - https://t.me/TarasCarInsuranceBot.
-- Video demonstrating - https://youtu.be/XcHoxOTl0y4.
+- Video demonstrating - https://youtu.be/F5Muw5oDe9w.
 - Bot workflow - https://ibb.co/PrcR6WR. I am not sure if this is correct workflow.
-
-### How to improve 
-- More flexible data validation.
 
 ##### If you have any questions, problems with ngrok or API keys, please contact me at E-mail: horilchaniytaras@gmail.com or Skype: live:.cid.77d6aebe9b034f79

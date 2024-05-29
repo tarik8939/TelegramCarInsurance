@@ -23,7 +23,7 @@ namespace TelegramCarInsurance.Domain.Commands
         {
             BotClient = botClient;
         }
-        // TODO:check this
+
         /// <summary>
         /// Default error handler
         /// </summary>

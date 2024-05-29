@@ -45,12 +45,13 @@ namespace TelegramCarInsurance.Domain.Commands
         /// <param name="botClient">Instance of TelegramBotClient</param>
         /// <param name="storage">Instance of UserDataStorage</param>
         /// <param name="configuration">Configuration instance to retrieve OpenAI API key</param>
-        public ScanVehiclePlateCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration)
+        /// <param name="mindeeClient">Instance of mindeeClient</param> 
+        public ScanVehiclePlateCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration, MindeeClient mindeeClient)
         {
             BotClient = botClient;
             Storage = storage;
             Configuration = configuration;
-            MindeeClient = new MindeeClient(Configuration["Mindee_API_Key"]);
+            MindeeClient = mindeeClient;
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace TelegramCarInsurance.Domain.Commands
             }
             else if (message.Type == MessageType.Document)
             {
-                fileId = message.Document?.FileId;
+                fileId = message.Document.FileId;
 
             }
             else throw new NotUploadedDocumentException(message.Chat.Username, message.Text);
@@ -88,8 +89,7 @@ namespace TelegramCarInsurance.Domain.Commands
                     if (!httpResponse.IsSuccessStatusCode)
                     {
                         await BotClient.SendTextMessageAsync(chatId,
-                            "Unable to upload license plate photo",
-                            replyMarkup: Keyboard.BasicButtonMarkup);
+                            "Unable to upload license plate photo");
                     }
 
                     // Read the content stream from the response
@@ -120,14 +120,17 @@ namespace TelegramCarInsurance.Domain.Commands
                         {
                             // Handle Mindee specific exceptions
                             await BotClient.SendTextMessageAsync(chatId,
-                                $"{e.Message}",
-                                replyMarkup: Keyboard.BasicButtonMarkup);
+                                String.Format(StaticErrors.ExtractDataError, message.Chat.Username));
+                        }
+                        catch (KeyNotFoundException e)
+                        {
+                            await BotClient.SendTextMessageAsync(chatId,
+                                String.Format(e.Message, message.Chat.Username));
                         }
                         catch (Exception e)
                         {
                             await BotClient.SendTextMessageAsync(chatId,
-                                $"{e.Message}",
-                                replyMarkup: Keyboard.BasicButtonMarkup);
+                                String.Format(StaticErrors.DefaultError, message.Chat.Username));
                         }
                     }
                 }

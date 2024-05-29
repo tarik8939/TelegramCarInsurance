@@ -49,7 +49,7 @@ namespace TelegramCarInsurance.Domain.Commands
                 await BotClient.SendTextMessageAsync(chatId, 
                     $"{(userData.LicensePlateDocument == null ?
                         $"{message.Chat.Username} sorry, but i don't have data about your license plate, try upload it again\n" :
-                        $"Car's plate data:\n{userData.LicensePlateDocument}")}" +
+                        $"Car's license plate:\n{userData.LicensePlateDocument}")}" +
                     $"{(userData.PassportDocument == null ?
                         $"{message.Chat.Username} sorry, but i don't have data about your passport, try upload it again\n" :
                         $"Car's plate data:\n{userData.PassportDocument}")}");
@@ -66,7 +66,7 @@ namespace TelegramCarInsurance.Domain.Commands
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    e.Message);
+                    String.Format(StaticErrors.DefaultError, message.Chat.Username));
             }
 
         }

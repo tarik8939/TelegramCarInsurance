@@ -14,6 +14,7 @@ using OpenAI_API.Completions;
 using TelegramCarInsurance.Domain.Storage;
 using TelegramCarInsurance.Domain.Static;
 using Telegram.Bot.Types.Enums;
+using TelegramCarInsurance.Domain.MyExceptions;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
@@ -37,12 +38,12 @@ namespace TelegramCarInsurance.Domain.Commands
         /// </summary>
         /// <param name="botClient">Instance of TelegramBotClient</param>
         /// <param name="storage">Instance of UserDataStorage</param>
-        /// <param name="configuration">Configuration instance to retrieve OpenAI API key</param>
-        public GeneratePolicyCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration)
+        /// <param name="openAiClient">Instance of OpenAiAPI</param>
+        public GeneratePolicyCommand(TelegramBotClient botClient, UserDataStorage storage, OpenAIAPI openAiClient)
         {
             BotClient = botClient;
             Storage = storage;
-            OpenAiClient = new OpenAIAPI(configuration["OpenAi_API_Key"]);
+            OpenAiClient = openAiClient;
         }
 
         /// <summary>
@@ -84,10 +85,15 @@ namespace TelegramCarInsurance.Domain.Commands
                 }
 
             }
+            catch (KeyNotFoundException e)
+            {
+                await BotClient.SendTextMessageAsync(chatId,
+                    String.Format(e.Message, message.Chat.Username));
+            }
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    e.Message);
+                    String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username));
             }
         }
 
@@ -142,18 +148,9 @@ namespace TelegramCarInsurance.Domain.Commands
             };
 
             // Request completion from OpenAI API
-            try
-            {
-                var completionResult = await OpenAiClient.Completions.CreateCompletionAsync(completionRequest);
-                var document = completionResult.Completions[0].Text;
+            var completionResult = await OpenAiClient.Completions.CreateCompletionAsync(completionRequest);
 
-                return document;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Oops, some trouble while generating insurance policy file");
-            }
-
+            return completionResult.Completions[0].Text;
         }
     }
 }

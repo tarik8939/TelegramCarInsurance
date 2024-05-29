@@ -33,10 +33,6 @@ namespace TelegramCarInsurance.Domain.Storage
             {
                 throw new KeyNotFoundException("{0} sorry, but i don't have any data about your documents");
             }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
         }
 
         /// <summary>

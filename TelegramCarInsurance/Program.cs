@@ -18,6 +18,7 @@ public class Program
         builder.Services.AddSingleton<CommandExecutor>();
         builder.Services.AddSingleton<UserDataStorage>();
         builder.Services.AddSingleton<RegexService>();
+        builder.Services.AddMindeeClient();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
 

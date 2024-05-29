@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Mindee;
+using OpenAI_API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,22 +29,34 @@ namespace TelegramCarInsurance.Domain.Services
 
         private RegexService RegexService { get; }
 
+        /// <summary>
+        /// MineeClient instance to extract data
+        /// </summary>
+        private MindeeClient MindeeClient { get; set; }
+
+        /// <summary>
+        /// Instance of OpenAiAPI
+        /// </summary>
+        private OpenAIAPI OpenAiClient { get; set; }
+
         public CommandExecutor(TelegramBot botClient, UserDataStorage userDataStorage, IConfiguration configuration, RegexService regexService)
         {
             RegexService = regexService;
+            MindeeClient = new MindeeClient(configuration["Mindee_API_Key"]);
+            OpenAiClient = new OpenAIAPI(configuration["OpenAi_API_Key"]);
 
             Commands = new List<ICommand>
             {
                 new StartCommand(botClient.GetClient()),
                 new PriceDisagreeCommand(botClient.GetClient()),
                 new ErrorCommand(botClient.GetClient()),
-                new QuestionCommand(botClient.GetClient(), configuration),
+                new QuestionCommand(botClient.GetClient(), OpenAiClient),
                 new ConfirmDataCommand(botClient.GetClient(), userDataStorage),
                 new GeneratePriceQuotationCommand(botClient.GetClient(), userDataStorage),
                 new WatchDataCommand(botClient.GetClient(), userDataStorage),
-                new ScanPassportCommand(botClient.GetClient(), userDataStorage, configuration),
-                new ScanVehiclePlateCommand(botClient.GetClient(), userDataStorage, configuration),
-                new GeneratePolicyCommand(botClient.GetClient(), userDataStorage, configuration)
+                new ScanPassportCommand(botClient.GetClient(), userDataStorage, configuration, MindeeClient),
+                new ScanVehiclePlateCommand(botClient.GetClient(), userDataStorage, configuration, MindeeClient),
+                new GeneratePolicyCommand(botClient.GetClient(), userDataStorage, OpenAiClient)
             };
         }
 
