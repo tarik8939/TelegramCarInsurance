@@ -1,5 +1,8 @@
 # TelegramCarInsurance
 
+### System requirements
+1. .Net 7
+
 ### How to run
 1. Run ngrok.exe from `TelegramCarInsurance/ngrok` folder
 2. In command line write `ngrok config add-authtoken 2gsARD4RSBSNInHC2mxYCgdMKMX_7myhrBP5sDQqiVqFeeuju` to add authtoken to the default ngrok.yml configuration file.
