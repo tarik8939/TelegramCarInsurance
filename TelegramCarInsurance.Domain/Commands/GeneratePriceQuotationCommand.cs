@@ -60,7 +60,8 @@ namespace TelegramCarInsurance.Domain.Commands
                 else
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username));
+                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
+                        replyMarkup: Keyboard.BasicButtonMarkup);
                 }
 
             }

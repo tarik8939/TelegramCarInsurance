@@ -37,7 +37,6 @@ namespace TelegramCarInsurance.Domain.Static
             new []
             {
                 new KeyboardButton(text:CommandsName.WatchDataCommand),
-                new KeyboardButton(text:CommandsName.ConfirmDataCommand),
                 new KeyboardButton(text:CommandsName.QuestionCommand),
             },
 

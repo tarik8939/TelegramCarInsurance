@@ -56,7 +56,7 @@ namespace TelegramCarInsurance.Domain.Services
                 new GeneratePriceQuotationCommand(botClient.GetClient(), userDataStorage),
                 new WatchDataCommand(botClient.GetClient(), userDataStorage),
                 new ScanPassportCommand(botClient.GetClient(), userDataStorage, configuration, MindeeClient),
-                new ScanVehiclePlateCommand(botClient.GetClient(), userDataStorage, configuration, MindeeClient),
+                new ScanLicensePlateCommand(botClient.GetClient(), userDataStorage, configuration, MindeeClient),
                 new GeneratePolicyCommand(botClient.GetClient(), userDataStorage, OpenAiClient)
             };
         }

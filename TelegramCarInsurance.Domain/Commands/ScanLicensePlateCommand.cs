@@ -19,7 +19,7 @@ using TelegramCarInsurance.Domain.MyExceptions;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
-    public class ScanVehiclePlateCommand : ICommand
+    public class ScanLicensePlateCommand : ICommand
     {
         public TelegramBotClient BotClient { get; set; }
 
@@ -37,16 +37,16 @@ namespace TelegramCarInsurance.Domain.Commands
         /// Property to hold the configuration settings
         /// </summary>
         private IConfiguration Configuration { get; }
-        public string Name => CommandsName.ScanVehiclePlateCommand;
+        public string Name => CommandsName.ScanLicensePlateCommand;
 
         /// <summary>
-        /// Constructor to initialize the ScanVehiclePlateCommand with dependencies
+        /// Constructor to initialize the ScanLicensePlateCommand with dependencies
         /// </summary>
         /// <param name="botClient">Instance of TelegramBotClient</param>
         /// <param name="storage">Instance of UserDataStorage</param>
         /// <param name="configuration">Configuration instance to retrieve OpenAI API key</param>
         /// <param name="mindeeClient">Instance of mindeeClient</param> 
-        public ScanVehiclePlateCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration, MindeeClient mindeeClient)
+        public ScanLicensePlateCommand(TelegramBotClient botClient, UserDataStorage storage, IConfiguration configuration, MindeeClient mindeeClient)
         {
             BotClient = botClient;
             Storage = storage;
@@ -105,14 +105,14 @@ namespace TelegramCarInsurance.Domain.Commands
                             var response = await MindeeClient
                                 .ParseAsync<LicensePlateV1>(inputSource);
 
-                            // Extract vehicle information from the response
-                            var vehicleInfo = response.Document.Inference.Prediction;
+                            // Extract license plate information from the response
+                            var licensePlate = response.Document.Inference.Prediction;
 
                             // Store the extracted data in user data storage
-                            Storage.AddData(chatId, vehicleInfo);
+                            Storage.AddData(chatId, licensePlate);
 
                             await BotClient.SendTextMessageAsync(chatId,
-                                $"Extracted data from vehicle plate:\n{vehicleInfo}\nIf data incorrect just send document again",
+                                $"Extracted data from license plate:\n{licensePlate}\nIf data incorrect just send document again",
                                 replyMarkup: Keyboard.BasicButtonMarkup);
 
 
