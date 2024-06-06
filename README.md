@@ -16,7 +16,7 @@
 
 ### Links 
 - Bot - https://t.me/TarasCarInsuranceBot.
-- Video demonstrating - https://youtu.be/F5Muw5oDe9w.
+- Video demonstrating - https://youtu.be/7_MUBC4ifgQ.
 - Bot workflow - https://ibb.co/PrcR6WR. I am not sure if this is correct workflow.
 
 ##### If you have any questions, problems with ngrok or API keys, please contact me at E-mail: horilchaniytaras@gmail.com or Skype: live:.cid.77d6aebe9b034f79
