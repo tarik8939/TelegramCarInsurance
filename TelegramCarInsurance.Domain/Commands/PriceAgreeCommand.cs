@@ -11,28 +11,29 @@ using TelegramCarInsurance.Domain.Storage;
 
 namespace TelegramCarInsurance.Domain.Commands
 {
-    public class ConfirmDataCommand : ICommand
+    internal class PriceAgreeCommand : ICommand
     {
         public TelegramBotClient BotClient { get; set; }
+
         /// <summary>
         /// UserDataStorage instance to manage user data
         /// </summary>
         private UserDataStorage Storage { get; set; }
-        public string Name => CommandsName.ConfirmDataCommand;
+        public string Name => CommandsName.PriceAgreeCommand;
 
         /// <summary>
-        /// Constructor to initialize the ConfirmDataCommand with dependencies
+        /// Constructor to initialize the PriceAgreeCommand with dependencies
         /// </summary>
         /// <param name="botClient">Instance of TelegramBotClient</param>
         /// <param name="storage">Instance of UserDataStorage</param>
-        public ConfirmDataCommand(TelegramBotClient botClient, UserDataStorage storage)
+        public PriceAgreeCommand(TelegramBotClient botClient, UserDataStorage storage)
         {
             BotClient = botClient;
             Storage = storage;
         }
 
         /// <summary>
-        /// Executes the command to confirm with extracted data
+        /// Executes the command to agree with price command
         /// </summary>
         /// <param name="message">Telegram message containing user request</param>
         public async Task Execute(Message message)
@@ -46,45 +47,45 @@ namespace TelegramCarInsurance.Domain.Commands
 
                 if (userData.IsDataFilled())
                 {
-                    if (userData.IsDataConfirmed)
+                    if (userData.IsPriceConfirmed)
                     {
                         await BotClient.SendTextMessageAsync(chatId,
-                            $"{message.Chat.Username}, you have already confirmed your data",
+                            $"{message.Chat.Username}, you have already agreed with price",
                             replyMarkup: Keyboard.ConfirmationMarkup);
                     }
                     else
                     {
-                        userData.ConfirmData();
+                        userData.ConfirmPrice();
 
                         await BotClient.SendTextMessageAsync(chatId,
-                            $"{message.Chat.Username} great, your data successfully confirmed, now you can generate price quotation",
+                            $"{message.Chat.Username} great, you successfully agreed with price, now you can generate policy",
                             replyMarkup: Keyboard.ConfirmationMarkup);
                     }
-;
+                    
                 }
                 else
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        $"{(userData.LicensePlateDocument == null ? 
+                        $"{(userData.LicensePlateDocument == null ?
                             String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "license plate") : null)}" +
                         $"{(userData.PassportDocument == null ?
-                            String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "passport") : null)}", 
-                        replyMarkup:Keyboard.BasicButtonMarkup);
+                            String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "passport") : null)}",
+                        replyMarkup: Keyboard.BasicButtonMarkup);
                 }
-
             }
             catch (KeyNotFoundException e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username), 
+                    String.Format(e.Message, message.Chat.Username),
                     replyMarkup: Keyboard.BasicButtonMarkup);
             }
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.DefaultError, message.Chat.Username), 
+                    String.Format(StaticErrors.DefaultError, message.Chat.Username),
                     replyMarkup: Keyboard.BasicButtonMarkup);
-            }
+            };
+
         }
     }
 }

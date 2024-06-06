@@ -16,6 +16,7 @@ namespace TelegramCarInsurance.Domain.Static
         public static string GeneratePolicyCommand => "Generate Insurance Policy Issuance";
         public static string GeneratePriceQuotationCommand => "Generate Price Quotation";
         public static string PriceDisagreeCommand => "No, disagree";
+        public static string PriceAgreeCommand => "Yes, agree";
         public static string ScanPassportCommand => "/passport";
         public static string ScanVehiclePlateCommand => "/vehicle";
         public static string WatchDataCommand => "Watch data";

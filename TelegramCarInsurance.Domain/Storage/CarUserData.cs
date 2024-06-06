@@ -18,13 +18,17 @@ namespace TelegramCarInsurance.Domain.Storage
         /// <summary>
         /// Is all user's data confirmed
         /// </summary>
-        public bool IsConfirmed { get; set; }
+        public bool IsDataConfirmed { get; set; }
+
+        /// <summary>
+        /// Is user agreed with price
+        /// </summary>
+        public bool IsPriceConfirmed { get; set; }
 
         public CarUserData(LicensePlateV1Document licensePlateDocument, PassportV1Document passportDocument)
         {
             LicensePlateDocument = licensePlateDocument;
             PassportDocument = passportDocument;
-            IsConfirmed = false;
         }
 
         /// <summary>
@@ -41,7 +45,15 @@ namespace TelegramCarInsurance.Domain.Storage
         /// </summary>
         public void ConfirmData()
         {
-            IsConfirmed = true;
+            IsDataConfirmed = true;
+        }
+
+        /// <summary>
+        /// Method that confirms the price
+        /// </summary>
+        public void ConfirmPrice()
+        {
+            IsPriceConfirmed = true;
         }
     }
 

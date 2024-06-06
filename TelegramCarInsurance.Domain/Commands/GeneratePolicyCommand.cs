@@ -62,7 +62,19 @@ namespace TelegramCarInsurance.Domain.Commands
                 // Retrieve user data based on chat ID
                 var userData = Storage.GetData(chatId);
 
-                if (userData.IsConfirmed)
+                if (!userData.IsDataConfirmed)
+                {
+                    await BotClient.SendTextMessageAsync(chatId,
+                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
+                        replyMarkup: Keyboard.BasicButtonMarkup);
+                } 
+                else if (!userData.IsPriceConfirmed)
+                {
+                    await BotClient.SendTextMessageAsync(chatId,
+                        String.Format(StaticErrors.NotConfirmedPrice, message.Chat.Username),
+                        replyMarkup: Keyboard.ConfirmationMarkup);
+                }
+                else 
                 {
                     // Generate document with OpenAI
                     string document = await GeneratePolicyDocumentAsync(userData);
@@ -77,25 +89,19 @@ namespace TelegramCarInsurance.Domain.Commands
                         replyMarkup: Keyboard.BasicButtonMarkup
                     );
                 }
-                else
-                {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
-                        replyMarkup: Keyboard.PriceConfirmationMarkup);
-                }
 
             }
             catch (KeyNotFoundException e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username), 
-                    replyMarkup: Keyboard.PriceConfirmationMarkup);
+                    String.Format(e.Message, message.Chat.Username),
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username), 
-                    replyMarkup: Keyboard.PriceConfirmationMarkup);
+                    String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username),
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
         }
 

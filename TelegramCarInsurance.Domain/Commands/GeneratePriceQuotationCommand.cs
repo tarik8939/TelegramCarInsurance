@@ -45,17 +45,22 @@ namespace TelegramCarInsurance.Domain.Commands
                 // Retrieve user data based on chat ID
                 var userData = Storage.GetData(chatId);
 
-                if (userData.IsConfirmed)
+                if (userData.IsPriceConfirmed)
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        "Fixed price for all insurance is 100 USD. Do you agree with this price? If yes - press Generate Insurance Policy Issuance button",
-                        replyMarkup: Keyboard.AgreePriceButtonMarkup);
+                        $"{message.Chat.Username}, you have already agreed with price",
+                        replyMarkup: Keyboard.ConfirmationMarkup);
+                }
+                else if (userData.IsDataConfirmed)
+                {
+                    await BotClient.SendTextMessageAsync(chatId,
+                        "Fixed price for all insurance is 100 USD. Do you agree with this price?",
+                        replyMarkup: Keyboard.PriceConfirmationMarkup);
                 }
                 else
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
-                        replyMarkup: Keyboard.BasicButtonMarkup);
+                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username));
                 }
 
             }

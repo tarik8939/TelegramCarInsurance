@@ -55,8 +55,7 @@ namespace TelegramCarInsurance.Domain.Commands
                         $"Car's plate data:\n{userData.PassportDocument}")}");
 
                 await BotClient.SendTextMessageAsync(chatId,
-                    $"If data incorrect just send documents again, If correct - press Confirm button",
-                    replyMarkup: Keyboard.BasicButtonMarkup);
+                    $"If data incorrect just send documents again, If correct - press Confirm button");
             }
             catch (KeyNotFoundException e)
             {

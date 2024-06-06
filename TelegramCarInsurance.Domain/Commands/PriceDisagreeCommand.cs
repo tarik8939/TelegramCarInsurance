@@ -32,9 +32,9 @@ namespace TelegramCarInsurance.Domain.Commands
         {
             long chatId = message.Chat.Id;
 
-            await BotClient.SendTextMessageAsync(chatId, 
+            await BotClient.SendTextMessageAsync(chatId,
                 $"{message.Chat.Username} sorry, but 100 USD is the only available price for a car insurance policy",
-                replyMarkup:Keyboard.PriceConfirmationMarkup);
+                replyMarkup: Keyboard.PriceConfirmationMarkup);
 
         }
     }
