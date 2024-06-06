@@ -61,12 +61,14 @@ namespace TelegramCarInsurance.Domain.Commands
             catch (KeyNotFoundException e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username));
+                    String.Format(e.Message, message.Chat.Username), 
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.DefaultError, message.Chat.Username));
+                    String.Format(StaticErrors.DefaultError, message.Chat.Username), 
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
 
         }

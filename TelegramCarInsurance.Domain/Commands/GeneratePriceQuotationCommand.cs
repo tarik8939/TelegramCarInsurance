@@ -48,7 +48,7 @@ namespace TelegramCarInsurance.Domain.Commands
                 if (userData.IsConfirmed)
                 {
                     await BotClient.SendTextMessageAsync(chatId,
-                        "Fixed price for all insurance is 100 USD. Do you agree with this price?",
+                        "Fixed price for all insurance is 100 USD. Do you agree with this price? If yes - press Generate Insurance Policy Issuance button",
                         replyMarkup: Keyboard.AgreePriceButtonMarkup);
                 }
                 else
@@ -62,12 +62,14 @@ namespace TelegramCarInsurance.Domain.Commands
             catch (KeyNotFoundException e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username));
+                    String.Format(e.Message, message.Chat.Username), 
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.DefaultError, message.Chat.Username));
+                    String.Format(StaticErrors.DefaultError, message.Chat.Username), 
+                    replyMarkup: Keyboard.BasicButtonMarkup);
             }
         }
     }

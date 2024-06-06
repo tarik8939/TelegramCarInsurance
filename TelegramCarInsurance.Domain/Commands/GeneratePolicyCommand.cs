@@ -81,19 +81,21 @@ namespace TelegramCarInsurance.Domain.Commands
                 {
                     await BotClient.SendTextMessageAsync(chatId,
                         String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
-                        replyMarkup: Keyboard.BasicButtonMarkup);
+                        replyMarkup: Keyboard.PriceConfirmationMarkup);
                 }
 
             }
             catch (KeyNotFoundException e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username));
+                    String.Format(e.Message, message.Chat.Username), 
+                    replyMarkup: Keyboard.PriceConfirmationMarkup);
             }
             catch (Exception e)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username));
+                    String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username), 
+                    replyMarkup: Keyboard.PriceConfirmationMarkup);
             }
         }
 

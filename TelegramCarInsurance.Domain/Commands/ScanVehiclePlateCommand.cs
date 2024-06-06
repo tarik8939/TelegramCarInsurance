@@ -89,7 +89,8 @@ namespace TelegramCarInsurance.Domain.Commands
                     if (!httpResponse.IsSuccessStatusCode)
                     {
                         await BotClient.SendTextMessageAsync(chatId,
-                            "Unable to upload license plate photo");
+                            "Unable to upload license plate photo", 
+                            replyMarkup: Keyboard.BasicButtonMarkup);
                     }
 
                     // Read the content stream from the response
@@ -120,17 +121,20 @@ namespace TelegramCarInsurance.Domain.Commands
                         {
                             // Handle Mindee specific exceptions
                             await BotClient.SendTextMessageAsync(chatId,
-                                String.Format(StaticErrors.ExtractDataError, message.Chat.Username));
+                                String.Format(StaticErrors.ExtractDataError, message.Chat.Username), 
+                                replyMarkup: Keyboard.BasicButtonMarkup);
                         }
                         catch (KeyNotFoundException e)
                         {
                             await BotClient.SendTextMessageAsync(chatId,
-                                String.Format(e.Message, message.Chat.Username));
+                                String.Format(e.Message, message.Chat.Username), 
+                                replyMarkup: Keyboard.BasicButtonMarkup);
                         }
                         catch (Exception e)
                         {
                             await BotClient.SendTextMessageAsync(chatId,
-                                String.Format(StaticErrors.DefaultError, message.Chat.Username));
+                                String.Format(StaticErrors.DefaultError, message.Chat.Username), 
+                                replyMarkup: Keyboard.BasicButtonMarkup);
                         }
                     }
                 }
