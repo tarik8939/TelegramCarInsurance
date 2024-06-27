@@ -31,7 +31,7 @@ namespace TelegramCarInsurance.Domain.Storage
             }
             catch (KeyNotFoundException)
             {
-                throw new KeyNotFoundException("{0} sorry, but i don't have any data about your documents. Please, try to upload them");
+                throw new KeyNotFoundException("{0} sorry, but i don't have any information about your documents. Please, try to upload them again");
             }
         }
 

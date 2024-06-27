@@ -68,7 +68,7 @@ public class QuestionCommand : ICommand
     private async Task<string> GenerateAnswer(string question)
     {
         // Prepare a prompt for OpenAI to generate a response
-        string prompt = $"{question}. Can you help me?.";
+        string prompt = $"{question}. Can you help me?";
 
         // Specify the model and create a completion request 
         var completionRequest = new CompletionRequest
