@@ -1,5 +1,7 @@
 # TelegramCarInsurance
 
+#### Important: this is a branch with KeyboardButton, if you want InlineKeyboardButton, switch the branch to `InlineKeyboard'.
+
 ### System requirements
 1. .Net 7
 
@@ -14,9 +16,14 @@
 
 ##### Important: in appsettings.json set your own token(with Credit balance)  in OpenAi_API_Key because in public repository OpenAi_API_Key will be automatically disabled. Or write to me and I will send you active key.
 
+### How to improve
+- Improve button menu.
+- More flexible error handling.
+
 ### Links 
 - Bot - https://t.me/TarasCarInsuranceBot.
 - Video demonstrating - https://youtu.be/7_MUBC4ifgQ.
 - Bot workflow - https://ibb.co/PrcR6WR. I am not sure if this is correct workflow.
 
 ##### If you have any questions, problems with ngrok or API keys, please contact me at E-mail: horilchaniytaras@gmail.com or Skype: live:.cid.77d6aebe9b034f79
+

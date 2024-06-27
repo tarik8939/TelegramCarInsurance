@@ -137,12 +137,6 @@ namespace TelegramCarInsurance.Domain.Services
                                     var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                                     await command.Execute(msg, e.Message);
                                 }
-                                catch (Exception)
-                                {
-                                    await Commands
-                                        .First(x => x.Name == CommandsName.ErrorCommand)
-                                        .Execute(msg);
-                                }
                             }
                             else
                             {
