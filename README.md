@@ -1,5 +1,7 @@
 # TelegramCarInsurance
 
+#### Important: this is a branch with InlineKeyboardButton, if you want KeyboardButton, switch the branch to `master'.
+
 ### System requirements
 1. .Net 7
 
@@ -13,6 +15,10 @@
 7. To extract data use prepared fake documents in `TelegramCarInsurance/fake data` folder.
 
 ##### Important: in appsettings.json set your own token(with Credit balance)  in OpenAi_API_Key because in public repository OpenAi_API_Key will be automatically disabled. Or write to me and I will send you active key.
+
+### How to improve
+- Improve inline button menu.
+- More flexible error handling.
 
 ### Links 
 - Bot - https://t.me/TarasCarInsuranceBot.
