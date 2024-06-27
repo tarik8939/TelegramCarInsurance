@@ -11,7 +11,7 @@ namespace TelegramCarInsurance.Domain.Storage
     /// <summary>
     /// Class that will store information about the extracted user data 
     /// </summary>
-    public class CarUserData
+    public class UserData
     {
         public LicensePlateV1Document LicensePlateDocument { get; set; }
         public PassportV1Document PassportDocument { get; set; }
@@ -25,7 +25,7 @@ namespace TelegramCarInsurance.Domain.Storage
         /// </summary>
         public bool IsPriceConfirmed { get; set; }
 
-        public CarUserData(LicensePlateV1Document licensePlateDocument, PassportV1Document passportDocument)
+        public UserData(LicensePlateV1Document licensePlateDocument, PassportV1Document passportDocument)
         {
             LicensePlateDocument = licensePlateDocument;
             PassportDocument = passportDocument;
@@ -56,6 +56,4 @@ namespace TelegramCarInsurance.Domain.Storage
             IsPriceConfirmed = true;
         }
     }
-
-
 }

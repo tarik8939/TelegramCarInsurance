@@ -13,16 +13,16 @@ namespace TelegramCarInsurance.Domain.Storage
     /// </summary>
     public class UserDataStorage
     {
-        private Dictionary<long, CarUserData> UserCollection = new Dictionary<long, CarUserData>();
+        private Dictionary<long, UserData> UserCollection = new Dictionary<long, UserData>();
 
         /// <summary>
         /// Method that returns information about the user by ChatId
         /// </summary>
         /// <param name="key">ChatId</param>
-        /// <returns>CarUserData</returns>
+        /// <returns>UserData</returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="Exception"></exception>
-        public CarUserData GetData(long key)
+        public UserData GetData(long key)
         {
             try
             {
@@ -45,12 +45,12 @@ namespace TelegramCarInsurance.Domain.Storage
             try
             {
                 var row = UserCollection[key];
-                UserCollection[key] = new CarUserData(
+                UserCollection[key] = new UserData(
                     value, row.PassportDocument);
             }
             catch (KeyNotFoundException e)
             {
-                UserCollection.Add(key, new CarUserData(
+                UserCollection.Add(key, new UserData(
                     value, null));
             }
         }
@@ -66,12 +66,12 @@ namespace TelegramCarInsurance.Domain.Storage
             {
                 var row = UserCollection[key];
 
-                UserCollection[key] = new CarUserData(
+                UserCollection[key] = new UserData(
                     row.LicensePlateDocument, value);
             }
             catch (KeyNotFoundException e)
             {
-                UserCollection.Add(key, new CarUserData(
+                UserCollection.Add(key, new UserData(
                     null, value));
             }
         }

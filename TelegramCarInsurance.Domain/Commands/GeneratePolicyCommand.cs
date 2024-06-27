@@ -97,7 +97,7 @@ namespace TelegramCarInsurance.Domain.Commands
                     String.Format(e.Message, message.Chat.Username),
                     replyMarkup: Keyboard.BasicButtonMarkup);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 await BotClient.SendTextMessageAsync(chatId,
                     String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username),
@@ -134,7 +134,7 @@ namespace TelegramCarInsurance.Domain.Commands
         /// <param name="userData">User data used to generate the document</param>
         /// <returns>A string representing the generated policy document</returns>
         /// <exception cref="Exception">Throws an exception if there is an issue generating the document</exception>
-        private async Task<string> GeneratePolicyDocumentAsync(CarUserData userData)
+        private async Task<string> GeneratePolicyDocumentAsync(UserData userData)
         {
             var passport = userData.PassportDocument;
             var plate = userData.LicensePlateDocument;

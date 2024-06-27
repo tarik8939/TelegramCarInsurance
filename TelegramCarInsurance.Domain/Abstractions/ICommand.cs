@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot;
 
 namespace TelegramCarInsurance.Domain.Abstractions
 {
@@ -14,10 +14,12 @@ namespace TelegramCarInsurance.Domain.Abstractions
         /// TelegramBot instance
         /// </summary>
         public TelegramBotClient BotClient { get; set; }
+
         /// <summary>
         /// Command's name
         /// </summary>
         public string Name { get; }
+
         /// <summary>
         /// Method thad execute command's logic
         /// </summary>
