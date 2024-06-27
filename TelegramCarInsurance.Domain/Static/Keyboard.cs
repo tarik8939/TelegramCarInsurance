@@ -12,45 +12,41 @@ namespace TelegramCarInsurance.Domain.Static
     /// </summary>
     public static class Keyboard
     {
-        public static ReplyKeyboardMarkup BasicButtonMarkup = new ReplyKeyboardMarkup(new[]
+        public static InlineKeyboardMarkup BasicButtonMarkup = new InlineKeyboardMarkup(new[]
         {
-            new []
+            new[]
             {
-                new KeyboardButton(text:CommandsName.WatchDataCommand),
-                new KeyboardButton(text:CommandsName.ConfirmDataCommand)
+                InlineKeyboardButton.WithCallbackData(CommandsName.WatchDataCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.ConfirmDataCommand)
             },
-            new []
+            new[]
             {
-                new KeyboardButton(text:CommandsName.QuestionCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.QuestionCommand),
             },
+        });
 
-        })
-        { ResizeKeyboard = true };
-
-        public static ReplyKeyboardMarkup ConfirmationMarkup = new ReplyKeyboardMarkup(new[]
+        public static InlineKeyboardMarkup ConfirmationMarkup = new InlineKeyboardMarkup(new[]
         {
-            new []
+            new[]
             {
-                new KeyboardButton(text:CommandsName.GeneratePolicyCommand),
-                new KeyboardButton(text:CommandsName.GeneratePriceQuotationCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.GeneratePolicyCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.GeneratePriceQuotationCommand),
             },
-            new []
+            new[]
             {
-                new KeyboardButton(text:CommandsName.WatchDataCommand),
-                new KeyboardButton(text:CommandsName.QuestionCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.WatchDataCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.QuestionCommand),
             },
 
-        })
-        { ResizeKeyboard = true };
+        });
 
-        public static ReplyKeyboardMarkup PriceConfirmationMarkup = new ReplyKeyboardMarkup(new[]
+        public static InlineKeyboardMarkup PriceConfirmationMarkup = new InlineKeyboardMarkup(new[]
+        {
+            new[]
             {
-                new []
-                {
-                    new KeyboardButton(text:CommandsName.PriceAgreeCommand),
-                    new KeyboardButton(text:CommandsName.PriceDisagreeCommand)
-                },
-            }) 
-        { ResizeKeyboard = true };
+                InlineKeyboardButton.WithCallbackData(CommandsName.PriceAgreeCommand),
+                InlineKeyboardButton.WithCallbackData(CommandsName.PriceDisagreeCommand)
+            },
+        });
     }
 }

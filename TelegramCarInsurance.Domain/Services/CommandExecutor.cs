@@ -69,9 +69,22 @@ namespace TelegramCarInsurance.Domain.Services
         public async Task GetUpdate(Update update)
         {
             // If statement for UpdateType
-            if (update.Type == UpdateType.Message)
+            if (update.Type == UpdateType.CallbackQuery || update.Type == UpdateType.Message)
             {
-                Message msg = update.Message;
+                Message msg;
+                string messageText;
+
+                // Setting message data
+                if (update.CallbackQuery != null)
+                {
+                    msg = update.CallbackQuery.Message;
+                    messageText = update.CallbackQuery.Data;
+                }
+                else
+                {
+                    msg = update.Message;
+                    messageText = msg.Text;
+                }
 
                 try
                 {
@@ -82,7 +95,7 @@ namespace TelegramCarInsurance.Domain.Services
                         try
                         {
                             // If statement for a question
-                            if (RegexService.IsQuestion(msg.Text))
+                            if (RegexService.IsQuestion(messageText!))
                             {
                                 await Commands
                                     .First(x => x.Name == CommandsName.QuestionCommand)
@@ -91,11 +104,11 @@ namespace TelegramCarInsurance.Domain.Services
                             else
                             {
                                 var command = Commands
-                                    .FirstOrDefault(x => RegexService.CompareCommand(x.Name, msg.Text));
+                                    .FirstOrDefault(x => RegexService.CompareCommand(x.Name, messageText!));
 
                                 if (command == null)
                                 {
-                                    throw new NotExistingCommandException(msg.Chat.Username, msg.Text);
+                                    throw new NotExistingCommandException(msg.Chat.Username!, messageText!);
                                 }
                                 else await command.Execute(msg);
                             }
@@ -137,12 +150,12 @@ namespace TelegramCarInsurance.Domain.Services
                                     var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                                     await command.Execute(msg, e.Message);
                                 }
-                                catch (Exception)
-                                {
-                                    await Commands
-                                        .First(x => x.Name == CommandsName.ErrorCommand)
-                                        .Execute(msg);
-                                }
+                                //catch (Exception)
+                                //{
+                                //    await Commands
+                                //        .First(x => x.Name == CommandsName.ErrorCommand)
+                                //        .Execute(msg);
+                                //}
                             }
                             else
                             {
