@@ -111,12 +111,6 @@ namespace TelegramCarInsurance.Domain.Services
                             var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                             await command.Execute(msg, e.Message);
                         }
-                        catch (Exception e)
-                        {
-                            await Commands
-                                .First(x => x.Name == CommandsName.ErrorCommand)
-                                .Execute(msg);
-                        }
                     }
                     // If statement for MessageType.Document messages
                     else if (msg.Type == MessageType.Document || msg.Type == MessageType.Photo)
@@ -133,7 +127,7 @@ namespace TelegramCarInsurance.Domain.Services
 
                                     if (command == null)
                                     {
-                                        throw new UnsupportedTypeDocumentException(msg.Chat.Username,
+                                        throw new UnsupportedTypeDocumentException(msg.Chat.Username!,
                                             msg.Caption);
                                     }
                                     else await command.Execute(msg);
@@ -143,7 +137,7 @@ namespace TelegramCarInsurance.Domain.Services
                                     var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                                     await command.Execute(msg, e.Message);
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
                                     await Commands
                                         .First(x => x.Name == CommandsName.ErrorCommand)
@@ -152,7 +146,7 @@ namespace TelegramCarInsurance.Domain.Services
                             }
                             else
                             {
-                                throw new UnknownTypeDocumentException(msg.Chat.Username);
+                                throw new UnknownTypeDocumentException(msg.Chat.Username!);
                             }
                         }
                         catch (UnknownTypeDocumentException e)
@@ -160,34 +154,26 @@ namespace TelegramCarInsurance.Domain.Services
                             var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                             await command.Execute(msg, e.Message);
                         }
-                        catch (Exception e)
-                        {
-                            await Commands
-                                .First(x => x.Name == CommandsName.ErrorCommand)
-                                .Execute(msg);
-                        }
-
                     }
                     //If statement for unsupported type messages
                     else
                     {
-                        throw new UnsupportedTypeMessageException(msg.Chat.Username, msg.Type.ToString());
+                        throw new UnsupportedTypeMessageException(msg.Chat.Username!, msg.Type.ToString());
                     }
                 }
                 catch (UnsupportedTypeMessageException e)
                 {
                     var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
-                    await command.Execute(msg, e.Message);
+                    await command.Execute(msg!, e.Message);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     await Commands
                         .First(x => x.Name == CommandsName.ErrorCommand)
-                        .Execute(msg);
+                        .Execute(msg!);
                 }
                 
             }
-
         }
     }
 }
