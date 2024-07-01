@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCarInsurance.Domain.Abstractions;
 using TelegramCarInsurance.Domain.Static;
 
@@ -41,13 +42,15 @@ namespace TelegramCarInsurance.Domain.Commands
         /// Custom error handler
         /// </summary>
         /// <param name="message">The message that triggered the error</param>
-        /// <param name="text">The custom error message text</param>
-        async Task IErrorCommand.Execute(Message message, string text)
+        /// <param name="errorMessage">The custom error message text</param>
+        /// <param name="buttonsMenu">Menu for commands</param>
+        async Task IErrorCommand.Execute(Message message, string errorMessage, ReplyKeyboardMarkup? buttonsMenu)
         {
             long chatId = message!.Chat.Id;
 
             await BotClient.SendTextMessageAsync(chatId,
-                text);
+                errorMessage,
+                replyMarkup: buttonsMenu);
         }
     }
 }

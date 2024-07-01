@@ -8,17 +8,15 @@ using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.MyExceptions
 {
-    public class UnsupportedTypeMessageException : Exception
+    public class DataFilledException : Exception
     {
-        private static string ErrorMessage => StaticErrors.UnsupportedTypeMessage;
-
         /// <summary>
         /// Button menu for error message
         /// </summary>
         public ReplyKeyboardMarkup? KeyboardButtons { get; set; }
 
-        public UnsupportedTypeMessageException(string userName, string document, ReplyKeyboardMarkup? keyboard = null)
-            : base(string.Format(ErrorMessage, userName, document))
+        public DataFilledException(string errorMesage, ReplyKeyboardMarkup? keyboard = null)
+            : base(errorMesage)
         {
             KeyboardButtons = keyboard;
         }

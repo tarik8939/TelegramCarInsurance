@@ -23,6 +23,6 @@ namespace TelegramCarInsurance.Domain.Static
         public static string GeneratePolicyError => "{0} sorry, but i can't generate your insurance policy. Please, try again later";
         public static string GenerateAnswerError => "{0} sorry, but i can't generate answer for your question. Please, try again later";
         public static string ExtractDataError => "{0} sorry, but i can't extract data from your documents. Please, try again later";
-
+        public static string StatusCodeError => "{0} sorry, but i can't upload your {1} photo";
     }
 }

@@ -4,22 +4,24 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.MyExceptions
 {
     public class NotExistingCommandException : Exception
     {
-        private static readonly string ErrorMessage = StaticErrors.NotExistingCommand;
+        private static string ErrorMessage => StaticErrors.NotExistingCommand;
 
-        public NotExistingCommandException(string userName, string command)
+        /// <summary>
+        /// Button menu for error message
+        /// </summary>
+        public ReplyKeyboardMarkup? KeyboardButtons { get; set; }
+
+        public NotExistingCommandException(string userName, string command, ReplyKeyboardMarkup? keyboard = null)
             : base(string.Format(ErrorMessage, userName, command))
         {
-        }
-
-        public NotExistingCommandException(string userName, string command, Exception innerException)
-            : base(string.Format(ErrorMessage, userName, command), innerException)
-        {
+            KeyboardButtons = keyboard;
         }
     }
 }

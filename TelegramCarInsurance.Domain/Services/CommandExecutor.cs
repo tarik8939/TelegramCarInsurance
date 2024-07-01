@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Mindee;
+using Mindee.Exceptions;
 using OpenAI_API;
 using System;
 using System.Collections.Generic;
@@ -71,8 +72,11 @@ namespace TelegramCarInsurance.Domain.Services
             // If statement for UpdateType
             if (update.Type == UpdateType.Message)
             {
+                // Telegram's message
                 Message msg = update.Message;
 
+                // Common exceptions handling
+                // TODO: Make better error handling
                 try
                 {
                     // If statement for MessageType.Text messages
@@ -99,22 +103,34 @@ namespace TelegramCarInsurance.Domain.Services
                                 }
                                 else await command.Execute(msg);
                             }
-
                         }
                         catch (NotExistingCommandException e)
                         {
                             var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
-                            await command.Execute(msg, e.Message);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
                         }
-                        catch (NotUploadedDocumentException e)
+
+                        catch (DataFilledException e)
                         {
                             var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
-                            await command.Execute(msg, e.Message);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
                         }
+                        catch (DataConfirmedException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
+                        }
+                        catch (PriceConfirmedException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
+                        }
+
                     }
-                    // If statement for MessageType.Document messages
+                    // If statement for MessageType.Document and MessageType.Photo messages
                     else if (msg.Type == MessageType.Document || msg.Type == MessageType.Photo)
                     {
+                        //catching exceptions for documents and photos
                         try
                         {
                             // If statement for document's caption
@@ -135,7 +151,7 @@ namespace TelegramCarInsurance.Domain.Services
                                 catch (UnsupportedTypeDocumentException e)
                                 {
                                     var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
-                                    await command.Execute(msg, e.Message);
+                                    await command.Execute(msg, e.Message, e.KeyboardButtons);
                                 }
                             }
                             else
@@ -146,7 +162,22 @@ namespace TelegramCarInsurance.Domain.Services
                         catch (UnknownTypeDocumentException e)
                         {
                             var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
-                            await command.Execute(msg, e.Message);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
+                        }
+                        catch (StatusCodeException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
+                        }
+                        catch (NotUploadedDocumentException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, e.Message, e.KeyboardButtons);
+                        }
+                        catch (MindeeException e)
+                        {
+                            var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                            await command.Execute(msg, String.Format(StaticErrors.ExtractDataError, msg.Chat.Username));
                         }
                     }
                     //If statement for unsupported type messages
@@ -155,10 +186,16 @@ namespace TelegramCarInsurance.Domain.Services
                         throw new UnsupportedTypeMessageException(msg.Chat.Username!, msg.Type.ToString());
                     }
                 }
+                // catching common exceptions
                 catch (UnsupportedTypeMessageException e)
                 {
                     var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
                     await command.Execute(msg!, e.Message);
+                }
+                catch (KeyNotFoundException e)
+                {
+                    var command = (IErrorCommand)Commands.First(x => x.Name == CommandsName.ErrorCommand);
+                    await command.Execute(msg, String.Format(e.Message, msg.Chat.Username), Keyboard.BasicButtonMarkup);
                 }
                 catch (Exception)
                 {
@@ -166,7 +203,6 @@ namespace TelegramCarInsurance.Domain.Services
                         .First(x => x.Name == CommandsName.ErrorCommand)
                         .Execute(msg!);
                 }
-                
             }
         }
     }

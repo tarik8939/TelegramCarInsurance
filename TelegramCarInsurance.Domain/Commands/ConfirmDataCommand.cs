@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramCarInsurance.Domain.Abstractions;
+using TelegramCarInsurance.Domain.MyExceptions;
 using TelegramCarInsurance.Domain.Static;
 using TelegramCarInsurance.Domain.Storage;
 
@@ -39,51 +40,35 @@ namespace TelegramCarInsurance.Domain.Commands
         {
             long chatId = message.Chat.Id;
 
-            try
+            // Retrieve user data based on chat ID
+            var userData = Storage.GetData(chatId);
+
+            if (userData.IsDataFilled())
             {
-                // Retrieve user data based on chat ID
-                var userData = Storage.GetData(chatId);
-
-                if (userData.IsDataFilled())
+                if (userData.IsDataConfirmed)
                 {
-                    if (userData.IsDataConfirmed)
-                    {
-                        await BotClient.SendTextMessageAsync(chatId,
-                            $"{message.Chat.Username}, you have already confirmed your data",
-                            replyMarkup: Keyboard.ConfirmationMarkup);
-                    }
-                    else
-                    {
-                        userData.ConfirmData();
-
-                        await BotClient.SendTextMessageAsync(chatId,
-                            $"{message.Chat.Username} great, your data successfully confirmed, now you can generate price quotation",
-                            replyMarkup: Keyboard.ConfirmationMarkup);
-                    }
-;
+                    await BotClient.SendTextMessageAsync(chatId,
+                        $"{message.Chat.Username}, you have already confirmed your data",
+                        replyMarkup: Keyboard.ConfirmationMarkup);
                 }
                 else
                 {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        $"{(userData.LicensePlateDocument == null ? 
-                            String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "license plate") : null)}" +
-                        $"{(userData.PassportDocument == null ?
-                            String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "passport") : null)}", 
-                        replyMarkup:Keyboard.BasicButtonMarkup);
-                }
+                    userData.ConfirmData();
 
+                    await BotClient.SendTextMessageAsync(chatId,
+                        $"{message.Chat.Username} great, your data successfully confirmed, now you can generate price quotation",
+                        replyMarkup: Keyboard.ConfirmationMarkup);
+                }
+;
             }
-            catch (KeyNotFoundException e)
+            else
             {
-                await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username), 
-                    replyMarkup: Keyboard.BasicButtonMarkup);
-            }
-            catch (Exception e)
-            {
-                await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.DefaultError, message.Chat.Username), 
-                    replyMarkup: Keyboard.BasicButtonMarkup);
+                throw new DataFilledException(
+                    $"{(userData.LicensePlateDocument == null ?
+                        String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "license plate") : null)}" +
+                    $"{(userData.PassportDocument == null ?
+                        String.Format(StaticErrors.DoNotHaveDocument, message.Chat.Username, "passport") : null)}",
+                    Keyboard.BasicButtonMarkup);
             }
         }
     }

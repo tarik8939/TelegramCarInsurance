@@ -72,9 +72,8 @@ namespace TelegramCarInsurance.Domain.Commands
             else if (message.Type == MessageType.Document)
             {
                 fileId = message.Document.FileId;
-
             }
-            else throw new NotUploadedDocumentException(message.Chat.Username, message.Text);
+            else throw new NotUploadedDocumentException(message.Chat.Username, message.Text, Keyboard.BasicButtonMarkup);
 
             // Get file information from Telegram
             var fileInfo = await BotClient.GetFileAsync(fileId);
@@ -88,54 +87,28 @@ namespace TelegramCarInsurance.Domain.Commands
                 {
                     if (!httpResponse.IsSuccessStatusCode)
                     {
-                        await BotClient.SendTextMessageAsync(chatId,
-                            "Unable to upload license plate photo", 
-                            replyMarkup: Keyboard.BasicButtonMarkup);
+                        throw new StatusCodeException(message.Chat.Username, message.Text, Keyboard.BasicButtonMarkup);
                     }
 
                     // Read the content stream from the response
                     using (var contentStream = await httpResponse.Content.ReadAsStreamAsync())
                     {
-                        try
-                        {
-                            string fileName = "myfile.jpg";
-                            var inputSource = new LocalInputSource(contentStream, fileName);
+                        string fileName = "myfile.jpg";
+                        var inputSource = new LocalInputSource(contentStream, fileName);
 
-                            // Parse the license plate data using MindeeClient
-                            var response = await MindeeClient
-                                .ParseAsync<LicensePlateV1>(inputSource);
+                        // Parse the license plate data using MindeeClient
+                        var response = await MindeeClient
+                            .ParseAsync<LicensePlateV1>(inputSource);
 
-                            // Extract license plate information from the response
-                            var licensePlate = response.Document.Inference.Prediction;
+                        // Extract license plate information from the response
+                        var licensePlate = response.Document.Inference.Prediction;
 
-                            // Store the extracted data in user data storage
-                            Storage.AddData(chatId, licensePlate);
+                        // Store the extracted data in user data storage
+                        Storage.AddData(chatId, licensePlate);
 
-                            await BotClient.SendTextMessageAsync(chatId,
-                                $"Extracted data from license plate:\n{licensePlate}\nIf data incorrect just send document again",
-                                replyMarkup: Keyboard.BasicButtonMarkup);
-
-
-                        }
-                        catch (MindeeException e)
-                        {
-                            // Handle Mindee specific exceptions
-                            await BotClient.SendTextMessageAsync(chatId,
-                                String.Format(StaticErrors.ExtractDataError, message.Chat.Username), 
-                                replyMarkup: Keyboard.BasicButtonMarkup);
-                        }
-                        catch (KeyNotFoundException e)
-                        {
-                            await BotClient.SendTextMessageAsync(chatId,
-                                String.Format(e.Message, message.Chat.Username), 
-                                replyMarkup: Keyboard.BasicButtonMarkup);
-                        }
-                        catch (Exception e)
-                        {
-                            await BotClient.SendTextMessageAsync(chatId,
-                                String.Format(StaticErrors.DefaultError, message.Chat.Username), 
-                                replyMarkup: Keyboard.BasicButtonMarkup);
-                        }
+                        await BotClient.SendTextMessageAsync(chatId,
+                            $"Extracted data from license plate:\n{licensePlate}\nIf data incorrect just send document again",
+                            replyMarkup: Keyboard.BasicButtonMarkup);
                     }
                 }
             }

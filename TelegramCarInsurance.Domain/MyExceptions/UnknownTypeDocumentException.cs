@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.MyExceptions
 {
     public class UnknownTypeDocumentException : Exception
     {
-        private static readonly string ErrorMessage = StaticErrors.UnknownTypeDocument;
+        private static string ErrorMessage => StaticErrors.UnknownTypeDocument;
 
-        public UnknownTypeDocumentException(string userName)
+        /// <summary>
+        /// Button menu for error message
+        /// </summary>
+        public ReplyKeyboardMarkup? KeyboardButtons { get; set; }
+
+        public UnknownTypeDocumentException(string userName, ReplyKeyboardMarkup? keyboard = null)
             : base(string.Format(ErrorMessage, userName))
         {
-        }
-
-        public UnknownTypeDocumentException(string userName, Exception innerException)
-            : base(string.Format(ErrorMessage, userName), innerException)
-        {
+            KeyboardButtons = keyboard;
         }
     }
 }

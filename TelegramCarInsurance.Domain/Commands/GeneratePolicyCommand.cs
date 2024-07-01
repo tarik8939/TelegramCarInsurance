@@ -57,52 +57,33 @@ namespace TelegramCarInsurance.Domain.Commands
             // Send chat action to indicate document upload is in progress
             await BotClient.SendChatActionAsync(chatId, ChatAction.UploadDocument);
 
-            try
+            // Retrieve user data based on chat ID
+            var userData = Storage.GetData(chatId);
+
+            if (!userData.IsDataConfirmed)
             {
-                // Retrieve user data based on chat ID
-                var userData = Storage.GetData(chatId);
-
-                if (!userData.IsDataConfirmed)
-                {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
-                        replyMarkup: Keyboard.BasicButtonMarkup);
-                } 
-                else if (!userData.IsPriceConfirmed)
-                {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        String.Format(StaticErrors.NotConfirmedPrice, message.Chat.Username),
-                        replyMarkup: Keyboard.ConfirmationMarkup);
-                }
-                else 
-                {
-                    // Generate document with OpenAI
-                    string document = await GeneratePolicyDocumentAsync(userData);
-
-                    // Create PDF file
-                    var pdf = GeneratePDF(document);
-
-                    await BotClient.SendDocumentAsync(
-                        chatId: chatId,
-                        document: new InputFileStream(new MemoryStream(pdf), "Policy.pdf"),
-                        caption: $"Here's your Insurance Policy Issuance {message.Chat.Username}.",
-                        replyMarkup: Keyboard.BasicButtonMarkup
-                    );
-                }
-
+                throw new DataConfirmedException(message.Chat.Username, Keyboard.BasicButtonMarkup);
             }
-            catch (KeyNotFoundException e)
+            else if (!userData.IsPriceConfirmed)
             {
-                await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username),
-                    replyMarkup: Keyboard.BasicButtonMarkup);
+                throw new PriceConfirmedException(message.Chat.Username, Keyboard.ConfirmationMarkup);
             }
-            catch (Exception)
+            else
             {
-                await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.GeneratePolicyError, message.Chat.Username),
-                    replyMarkup: Keyboard.BasicButtonMarkup);
+                // Generate document with OpenAI
+                string document = await GeneratePolicyDocumentAsync(userData);
+
+                // Create PDF file
+                var pdf = GeneratePDF(document);
+
+                await BotClient.SendDocumentAsync(
+                    chatId: chatId,
+                    document: new InputFileStream(new MemoryStream(pdf), "Policy.pdf"),
+                    caption: $"Here's your Insurance Policy Issuance {message.Chat.Username}.",
+                    replyMarkup: Keyboard.BasicButtonMarkup
+                );
             }
+
         }
 
         /// <summary>

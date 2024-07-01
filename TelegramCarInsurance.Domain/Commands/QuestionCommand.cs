@@ -53,8 +53,7 @@ public class QuestionCommand : ICommand
         }
         catch (Exception e)
         {
-            await BotClient.SendTextMessageAsync(chatId,
-                String.Format(StaticErrors.GenerateAnswerError, message.Chat.Username));
+            throw new GenerateAnswerException(message.Chat.Username);
         }
 
     }

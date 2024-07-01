@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramCarInsurance.Domain.Abstractions;
+using TelegramCarInsurance.Domain.MyExceptions;
 using TelegramCarInsurance.Domain.Static;
 using TelegramCarInsurance.Domain.Storage;
 
@@ -40,43 +41,22 @@ namespace TelegramCarInsurance.Domain.Commands
         {
             long chatId = message.Chat.Id;
 
-            try
-            {
-                // Retrieve user data based on chat ID
-                var userData = Storage.GetData(chatId);
+            // Retrieve user data based on chat ID
+            var userData = Storage.GetData(chatId);
 
-                if (userData.IsPriceConfirmed)
-                {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        $"{message.Chat.Username}, you have already agreed with price",
-                        replyMarkup: Keyboard.ConfirmationMarkup);
-                }
-                else if (userData.IsDataConfirmed)
-                {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        "Fixed price for all insurance is 100 USD. Do you agree with this price?",
-                        replyMarkup: Keyboard.PriceConfirmationMarkup);
-                }
-                else
-                {
-                    await BotClient.SendTextMessageAsync(chatId,
-                        String.Format(StaticErrors.NotConfirmedData, message.Chat.Username),
-                        replyMarkup: Keyboard.BasicButtonMarkup);
-                }
-
-            }
-            catch (KeyNotFoundException e)
+            if (userData.IsPriceConfirmed)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(e.Message, message.Chat.Username), 
-                    replyMarkup: Keyboard.BasicButtonMarkup);
+                    $"{message.Chat.Username}, you have already agreed with price",
+                    replyMarkup: Keyboard.ConfirmationMarkup);
             }
-            catch (Exception e)
+            else if (userData.IsDataConfirmed)
             {
                 await BotClient.SendTextMessageAsync(chatId,
-                    String.Format(StaticErrors.DefaultError, message.Chat.Username), 
-                    replyMarkup: Keyboard.BasicButtonMarkup);
+                    "Fixed price for all insurance is 100 USD. Do you agree with this price?",
+                    replyMarkup: Keyboard.PriceConfirmationMarkup);
             }
+            else throw new DataConfirmedException(message.Chat.Username, Keyboard.BasicButtonMarkup);
         }
     }
 }

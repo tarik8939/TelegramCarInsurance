@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCarInsurance.Domain.Static;
 
 namespace TelegramCarInsurance.Domain.MyExceptions
 {
-    public class UnsupportedTypeMessageException : Exception
+    public class DataConfirmedException : Exception
     {
-        private static string ErrorMessage => StaticErrors.UnsupportedTypeMessage;
+        private static string ErrorMessage => StaticErrors.NotConfirmedData;
 
         /// <summary>
         /// Button menu for error message
         /// </summary>
         public ReplyKeyboardMarkup? KeyboardButtons { get; set; }
 
-        public UnsupportedTypeMessageException(string userName, string document, ReplyKeyboardMarkup? keyboard = null)
-            : base(string.Format(ErrorMessage, userName, document))
+        public DataConfirmedException(string userName, ReplyKeyboardMarkup? keyboard = null)
+            : base(String.Format(ErrorMessage, userName))
         {
             KeyboardButtons = keyboard;
         }
