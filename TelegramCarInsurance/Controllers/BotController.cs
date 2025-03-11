@@ -11,7 +11,7 @@ namespace TelegramCarInsurance.Controllers
     public class BotController : ControllerBase
     {
         private  CommandExecutor CommandExecutor { get; }
-        //test3
+     
         public BotController(CommandExecutor commandExecutor)
         {
             CommandExecutor = commandExecutor;
