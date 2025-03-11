@@ -16,7 +16,7 @@ namespace TelegramCarInsurance.Controllers
         {
             CommandExecutor = commandExecutor;
         }
-        //xvxvxcv
+        
         [HttpPost]
         public async void Update(Update update) 
         {
