@@ -12,7 +12,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         //xvxvxcv
         // Add services to the container.
-
+        //fsdfsdfs
         builder.Services.AddControllers().AddNewtonsoftJson();
         builder.Services.AddSingleton<TelegramBot>();
         builder.Services.AddSingleton<CommandExecutor>();
