@@ -10,7 +10,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        //test3asd
+ 
         // Add services to the container.
 
         builder.Services.AddControllers().AddNewtonsoftJson();
